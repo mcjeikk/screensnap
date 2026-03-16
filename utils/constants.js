@@ -223,4 +223,4 @@ export const BADGE_RECORDING_COLOR = '#EF4444';
 export const EXTENSION_NAME = 'ScreenSnap';
 
 /** @type {string} Current version */
-export const VERSION = '0.4.1';
+export const VERSION = '0.4.2';

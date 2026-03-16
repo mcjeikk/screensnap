@@ -73,16 +73,22 @@
   let isMuted = false;
   let startTime = Date.now();
 
+  /** @type {number} Total milliseconds spent in paused state */
+  let pausedDuration = 0;
+
+  /** @type {number} Timestamp when current pause started */
+  let pauseStartTime = 0;
+
   /** @type {number|null} */
   let timerInterval = null;
 
   // ── Timer ───────────────────────────────────────
 
   /**
-   * Update the timer display with elapsed time.
+   * Update the timer display with elapsed time, accounting for paused duration.
    */
   function updateTimer() {
-    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const elapsed = Math.floor((Date.now() - startTime - pausedDuration) / 1000);
     const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
     const ss = String(elapsed % 60).padStart(2, '0');
     timerEl.textContent = `${mm}:${ss}`;
@@ -101,9 +107,11 @@
       pauseBtn.title = 'Resume';
       pauseBtn.setAttribute('aria-label', 'Resume recording');
       recDot.classList.add('paused');
+      pauseStartTime = Date.now();
       clearInterval(timerInterval);
       chrome.runtime.sendMessage({ action: 'widget-pause' });
     } else {
+      pausedDuration += Date.now() - pauseStartTime;
       pauseBtn.textContent = '\u23F8\uFE0F';
       pauseBtn.title = 'Pause';
       pauseBtn.setAttribute('aria-label', 'Pause recording');

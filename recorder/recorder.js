@@ -49,6 +49,12 @@
   /** @type {boolean} */
   let isMicMuted = false;
 
+  /** @type {number} Total milliseconds spent in paused state */
+  let pausedDuration = 0;
+
+  /** @type {number} Timestamp when current pause started */
+  let pauseStartTime = 0;
+
   // Streams
   /** @type {MediaStream|null} */
   let mainStream = null;
@@ -73,13 +79,29 @@
 
   // ── Init ────────────────────────────────────────
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
+    await checkExistingRecording();
     initSourceFromURL();
     bindSourceButtons();
     bindToggles();
     bindRecordingControls();
     document.getElementById('btn-start').addEventListener('click', startRecordingFlow);
   });
+
+  /**
+   * Check if a recording is already in progress and disable start button if so.
+   */
+  async function checkExistingRecording() {
+    try {
+      const response = await chrome.runtime.sendMessage({ action: 'get-recording-status' });
+      if (response?.isRecording) {
+        showError('A recording is already in progress. Stop it before starting a new one.');
+        document.getElementById('btn-start').disabled = true;
+      }
+    } catch {
+      // Service worker may not be ready — proceed normally
+    }
+  }
 
   /**
    * Read ?source= URL param and pre-select the recording source.
@@ -576,23 +598,27 @@
 
     mediaRecorder.start(MEDIA_RECORDER_TIMESLICE_MS);
     recordingStartTime = Date.now();
+    pausedDuration = 0;
+    pauseStartTime = 0;
     startTimer();
   }
 
   // ── Recording Controls ────────────────────────────
 
-  /** Toggle pause/resume on the recording. */
+  /** Toggle pause/resume on the recording. Tracks paused duration for accurate timer. */
   function togglePause() {
     if (!mediaRecorder) return;
     const btn = document.getElementById('btn-pause');
 
     if (isPaused) {
+      pausedDuration += Date.now() - pauseStartTime;
       mediaRecorder.resume();
       isPaused = false;
       btn.textContent = '\u23F8\uFE0F Pause';
       startTimer();
       chrome.runtime.sendMessage({ action: 'recording-resumed' });
     } else {
+      pauseStartTime = Date.now();
       mediaRecorder.pause();
       isPaused = true;
       btn.textContent = '\u25B6\uFE0F Resume';
@@ -638,9 +664,11 @@
     updateTimer();
   }
 
-  /** Update the timer display. */
+  /**
+   * Update the timer display, accounting for paused duration.
+   */
   function updateTimer() {
-    const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+    const elapsed = Math.floor((Date.now() - recordingStartTime - pausedDuration) / 1000);
     const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
     const ss = String(elapsed % 60).padStart(2, '0');
     document.getElementById('rec-timer').textContent = `${mm}:${ss}`;
@@ -778,7 +806,10 @@
         sendResponse({ success: true });
         break;
       default:
-        sendResponse({ success: false, error: `Unknown action: ${message.action}` });
+        // Do NOT respond to unknown messages — prevents race condition
+        // with offscreen document clipboard operations (other listeners
+        // responding synchronously would override the async offscreen response)
+        return false;
     }
     return false;
   });

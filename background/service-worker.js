@@ -1,12 +1,12 @@
 /**
- * @file ScreenSnap — Background Service Worker v0.4.1 (MV3)
+ * @file ScreenSnap — Background Service Worker v0.4.2 (MV3)
  * @description Central coordinator for the extension. Handles capture commands,
  * keyboard shortcuts, recording state, notifications, onInstalled events,
  * and history management. Uses a message router pattern for clean dispatch.
  *
  * NOTE: Service workers can terminate after 30s of inactivity.
  * State is persisted via chrome.storage, not global variables.
- * @version 0.4.1
+ * @version 0.4.2
  */
 
 // ── Imports (not available without "type": "module" — using inline for MV3 compat) ──
@@ -146,9 +146,11 @@ chrome.commands.onCommand.addListener(async (command) => {
       await captureVisibleArea(tab);
       break;
     case 'capture-full':
+      await ensureContentScript(tab.id);
       await sendToContent(tab.id, { action: MESSAGE_TYPES.CAPTURE_FULL_PAGE });
       break;
     case 'capture-selection':
+      await ensureContentScript(tab.id);
       await sendToContent(tab.id, { action: MESSAGE_TYPES.START_SELECTION });
       break;
     default:
@@ -222,6 +224,45 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true; // Keep channel open for async response
 });
 
+// ── Content Script Injection (dynamic — no manifest content_scripts) ────
+
+/**
+ * Dynamically inject the content script and CSS into a tab.
+ * Uses a guard in the content script to prevent double-initialization.
+ * @param {number} tabId - Target tab ID
+ * @returns {Promise<boolean>} True if injection succeeded
+ */
+async function ensureContentScript(tabId) {
+  try {
+    const tab = await chrome.tabs.get(tabId);
+    const url = tab.url || '';
+    if (
+      !url ||
+      url.startsWith('chrome://') ||
+      url.startsWith('chrome-extension://') ||
+      url.startsWith('about:') ||
+      url.startsWith('edge://') ||
+      url.startsWith('devtools://')
+    ) {
+      log('WARN', 'Cannot inject content script into restricted URL:', url);
+      return false;
+    }
+
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      files: ['content/content-script.js'],
+    });
+    await chrome.scripting.insertCSS({
+      target: { tabId },
+      files: ['content/content-style.css'],
+    });
+    return true;
+  } catch (err) {
+    log('WARN', 'Content script injection failed:', err.message);
+    return false;
+  }
+}
+
 // ── Screenshot Functions ────────────────────────────
 
 /**
@@ -248,25 +289,33 @@ async function captureVisibleArea(tab) {
 }
 
 /**
- * Initiate a full-page capture by messaging the content script.
+ * Initiate a full-page capture by injecting and messaging the content script.
  * @param {number} [tabId] - Target tab ID
  * @returns {Promise<{success: boolean, error?: string}>}
  */
 async function initiateFullPageCapture(tabId) {
   const tab = tabId ? { id: tabId } : await getCurrentTab();
   if (!tab?.id) return { success: false, error: 'No active tab' };
+
+  const injected = await ensureContentScript(tab.id);
+  if (!injected) return { success: false, error: 'Cannot capture this page (restricted URL)' };
+
   await sendToContent(tab.id, { action: MESSAGE_TYPES.CAPTURE_FULL_PAGE });
   return { success: true };
 }
 
 /**
- * Initiate selection capture by messaging the content script.
+ * Initiate selection capture by injecting and messaging the content script.
  * @param {number} [tabId] - Target tab ID
  * @returns {Promise<{success: boolean, error?: string}>}
  */
 async function initiateSelectionCapture(tabId) {
   const tab = tabId ? { id: tabId } : await getCurrentTab();
   if (!tab?.id) return { success: false, error: 'No active tab' };
+
+  const injected = await ensureContentScript(tab.id);
+  if (!injected) return { success: false, error: 'Cannot capture this page (restricted URL)' };
+
   await sendToContent(tab.id, { action: MESSAGE_TYPES.START_SELECTION });
   return { success: true };
 }
@@ -382,10 +431,17 @@ async function requestDesktopCapture(sender) {
 /**
  * Handle recording-started notification from the recorder tab.
  * Sets badge, injects recording widget into the target tab.
+ * Guards against simultaneous recordings.
  * @param {chrome.runtime.MessageSender} sender - Message sender (recorder tab)
- * @returns {Promise<{success: boolean}>}
+ * @returns {Promise<{success: boolean, error?: string}>}
  */
 async function onRecordingStarted(sender) {
+  const currentState = await getRecordingState();
+  if (currentState.isRecording) {
+    log('WARN', 'Ignoring recording-started — another recording is already active');
+    return { success: false, error: 'A recording is already in progress' };
+  }
+
   const recorderTabId = sender.tab?.id || null;
   await setRecordingState({ isRecording: true, recorderTabId });
 
@@ -512,10 +568,13 @@ async function showNotification(title, message) {
   }
 }
 
-chrome.notifications.onClicked.addListener((notificationId) => {
-  chrome.tabs.create({ url: chrome.runtime.getURL('history/history.html') });
-  chrome.notifications.clear(notificationId);
-});
+// Graceful degradation: notifications API may not be available in all contexts
+if (chrome.notifications?.onClicked) {
+  chrome.notifications.onClicked.addListener((notificationId) => {
+    chrome.tabs.create({ url: chrome.runtime.getURL('history/history.html') });
+    chrome.notifications.clear(notificationId);
+  });
+}
 
 // ── History Management ──────────────────────────────
 
@@ -628,5 +687,23 @@ async function ensureOffscreenDocument() {
     throw err;
   }
 }
+
+// ── Tab Removal Cleanup ─────────────────────────────
+
+/**
+ * Detect when the recorder tab is closed during an active recording.
+ * Cleans up recording state and badge if the recorder tab goes away.
+ */
+chrome.tabs.onRemoved.addListener(async (tabId) => {
+  try {
+    const state = await getRecordingState();
+    if (state.isRecording && state.recorderTabId === tabId) {
+      log('WARN', 'Recorder tab closed during recording — cleaning up');
+      await onRecordingStopped();
+    }
+  } catch (err) {
+    log('WARN', 'Tab removal cleanup error:', err.message);
+  }
+});
 
 log('INFO', `Service worker initialized (v${chrome.runtime.getManifest().version})`);

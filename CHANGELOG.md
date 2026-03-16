@@ -4,6 +4,24 @@ All notable changes to ScreenSnap will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
+## [0.4.2] - 2026-03-16
+
+### Changed
+- **Manifest**: Removed static `content_scripts` declaration — content script and CSS are now injected dynamically via `chrome.scripting.executeScript()` only when capture is initiated, eliminating injection overhead on every page load
+- **Service Worker**: Added `ensureContentScript(tabId)` helper with URL validation (skips chrome://, about:, edge:// pages) before injection
+- **Service Worker**: Added `chrome.tabs.onRemoved` listener to clean up recording state (badge, widget) if recorder tab is closed during active recording
+- **Service Worker**: Added simultaneous recording guard in `onRecordingStarted` — rejects if another recording is already active
+- **Service Worker**: Graceful degradation for `chrome.notifications.onClicked` (checks API availability)
+- **Recorder**: Added existing recording check on page load — disables start button with error message if a recording is already in progress
+- **Recorder**: Timer now correctly tracks paused duration (`pausedDuration` accumulator) instead of showing total elapsed time including pauses
+- **Recording Widget**: Timer now correctly tracks paused duration, matching the fix applied to the recorder page
+- **Error Boundaries**: All extension pages now have global `window.error` and `unhandledrejection` handlers (via theme-init.js) that log errors and show a user-friendly toast
+
+### Fixed
+- **Race condition**: Recorder.js `onMessage` listener no longer responds to unknown message types — previously, when the service worker sent clipboard messages to the offscreen document, the recorder page's synchronous error response could override the offscreen document's async success response, causing clipboard copy to fail when recorder tab was open
+- **Timer inaccuracy**: Both recorder page timer and floating recording widget timer now subtract paused duration from elapsed time, showing actual recording time instead of wall-clock time
+- **Restricted URL crash**: Keyboard shortcuts and capture buttons now gracefully fail with an error message when used on chrome://, about://, or extension pages instead of throwing
+
 ## [0.4.1] - 2026-03-16
 
 ### Changed
