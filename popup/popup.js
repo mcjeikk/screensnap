@@ -84,18 +84,57 @@
   /**
    * Bind toggle interactions for PiP sub-options visibility.
    */
-  function bindRecordingToggles() {
-    document.getElementById('opt-pip').addEventListener('change', (e) => {
-      document.getElementById('pip-options').style.display = e.target.checked ? 'block' : 'none';
-    });
+  /**
+   * Check if a media permission is granted.
+   * @param {'microphone'|'camera'} name
+   * @returns {Promise<boolean>}
+   */
+  async function isPermissionGranted(name) {
+    try {
+      const result = await navigator.permissions.query({ name });
+      return result.state === 'granted';
+    } catch {
+      return false;
+    }
+  }
 
-    // Grant Permissions button — opens a tab where Chrome can show the prompt
-    const grantBtn = document.getElementById('btn-grant-permissions');
-    if (grantBtn) {
-      grantBtn.addEventListener('click', () => {
-        chrome.tabs.create({ url: chrome.runtime.getURL('permissions/permissions.html') });
+  /**
+   * Open the permissions page if needed, with a message about what to grant.
+   * @param {'microphone'|'camera'} type
+   */
+  function openPermissionsPage(type) {
+    chrome.tabs.create({
+      url: chrome.runtime.getURL(`permissions/permissions.html?request=${type}`),
+    });
+  }
+
+  function bindRecordingToggles() {
+    // Mic toggle — check permission when enabled
+    const micToggle = document.getElementById('opt-mic');
+    if (micToggle) {
+      micToggle.addEventListener('change', async (e) => {
+        if (e.target.checked) {
+          const granted = await isPermissionGranted('microphone');
+          if (!granted) {
+            e.target.checked = false;
+            openPermissionsPage('microphone');
+          }
+        }
       });
     }
+
+    // PiP toggle — check camera permission when enabled
+    document.getElementById('opt-pip').addEventListener('change', async (e) => {
+      document.getElementById('pip-options').style.display = e.target.checked ? 'block' : 'none';
+      if (e.target.checked) {
+        const granted = await isPermissionGranted('camera');
+        if (!granted) {
+          e.target.checked = false;
+          document.getElementById('pip-options').style.display = 'none';
+          openPermissionsPage('camera');
+        }
+      }
+    });
   }
 
   // ── Start Recording ─────────────────────────────

@@ -1,75 +1,78 @@
 /**
  * @file ScreenBolt — Permissions Page
- * @description Opens in a regular tab to request mic/camera permissions.
- * Extension popups can't show Chrome permission prompts, so this page
- * handles it. Once granted, permissions are cached and the offscreen
- * document can use them freely.
+ * @description Opens in a tab to request mic/camera permissions.
+ * Accepts ?request=microphone or ?request=camera to auto-trigger the right prompt.
+ * Once granted, user can close this tab and go back to the popup.
  */
 (() => {
   'use strict';
 
   const resultEl = document.getElementById('result');
   const doneBtn = document.getElementById('btn-done');
-  let micGranted = false;
-  let camGranted = false;
+  const micBtn = document.getElementById('btn-mic');
+  const camBtn = document.getElementById('btn-cam');
 
-  /**
-   * Show a result message.
-   * @param {string} msg - Message to display
-   * @param {boolean} ok - Success or failure
-   */
   function showResult(msg, ok) {
     resultEl.textContent = msg;
     resultEl.className = ok ? 'result result--ok' : 'result result--fail';
-    if (micGranted || camGranted) {
-      doneBtn.style.display = 'inline-block';
-    }
+    doneBtn.style.display = 'inline-block';
   }
 
-  document.getElementById('btn-mic').addEventListener('click', async () => {
+  async function requestMic() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(t => t.stop());
-      micGranted = true;
-      showResult('✅ Microphone access granted!', true);
+      micBtn.textContent = '🎤 Microphone ✅';
+      micBtn.disabled = true;
+      showResult('✅ Microphone granted! Close this tab and enable the toggle again.', true);
     } catch (err) {
       showResult('❌ Microphone denied: ' + err.message, false);
     }
-  });
+  }
 
-  document.getElementById('btn-cam').addEventListener('click', async () => {
+  async function requestCam() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       stream.getTracks().forEach(t => t.stop());
-      camGranted = true;
-      showResult('✅ Camera access granted!', true);
+      camBtn.textContent = '📷 Camera ✅';
+      camBtn.disabled = true;
+      showResult('✅ Camera granted! Close this tab and enable the toggle again.', true);
     } catch (err) {
       showResult('❌ Camera denied: ' + err.message, false);
     }
-  });
+  }
 
-  doneBtn.addEventListener('click', async () => {
-    // Notify SW that permissions are ready, then close
+  micBtn.addEventListener('click', requestMic);
+  camBtn.addEventListener('click', requestCam);
+
+  doneBtn.addEventListener('click', () => window.close());
+
+  // Check which permissions are already granted and update buttons
+  async function checkExisting() {
     try {
-      await chrome.runtime.sendMessage({ action: 'permissions-granted', mic: micGranted, cam: camGranted });
-    } catch { /* SW may not be listening */ }
-    window.close();
-  });
+      const mic = await navigator.permissions.query({ name: 'microphone' });
+      if (mic.state === 'granted') {
+        micBtn.textContent = '🎤 Microphone ✅';
+        micBtn.disabled = true;
+      }
+    } catch {}
+    try {
+      const cam = await navigator.permissions.query({ name: 'camera' });
+      if (cam.state === 'granted') {
+        camBtn.textContent = '📷 Camera ✅';
+        camBtn.disabled = true;
+      }
+    } catch {}
+  }
 
-  // Check if permissions are already granted
-  navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(stream => {
-      stream.getTracks().forEach(t => t.stop());
-      micGranted = true;
-      document.getElementById('btn-mic').textContent = '🎤 Microphone ✅';
-    })
-    .catch(() => {});
+  checkExisting();
 
-  navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
-      stream.getTracks().forEach(t => t.stop());
-      camGranted = true;
-      document.getElementById('btn-cam').textContent = '📷 Camera ✅';
-    })
-    .catch(() => {});
+  // Auto-request based on URL param
+  const params = new URLSearchParams(window.location.search);
+  const request = params.get('request');
+  if (request === 'microphone') {
+    requestMic();
+  } else if (request === 'camera') {
+    requestCam();
+  }
 })();
