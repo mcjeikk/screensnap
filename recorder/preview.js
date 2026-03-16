@@ -6,206 +6,275 @@
  * @version 0.5.0
  */
 
-(() => {
-  'use strict';
 
-  // ── Constants ───────────────────────────────────
-  const LOG_PREFIX = '[ScreenBolt][Preview]';
+'use strict';
 
-  // ── State ───────────────────────────────────────
-  /** @type {Blob|null} */
-  let videoBlob = null;
+// ── Constants ───────────────────────────────────
+const LOG_PREFIX = '[ScreenBolt][Preview]';
 
-  /** @type {string} */
-  let videoMimeType = 'video/webm';
+// ── State ───────────────────────────────────────
+/** @type {Blob|null} */
+let videoBlob = null;
 
-  /** @type {string|null} Object URL for the video element — must be revoked */
-  let videoBlobUrl = null;
+/** @type {string} */
+let videoMimeType = 'video/webm';
 
-  // ── Init ────────────────────────────────────────
+/** @type {string|null} Object URL for the video element — must be revoked */
+let videoBlobUrl = null;
 
-  document.addEventListener('DOMContentLoaded', async () => {
-    try {
-      await loadRecording();
-      bindButtons();
-    } catch (err) {
-      showError(`Failed to load recording: ${err.message}`);
-    }
-  });
+// ── Init ────────────────────────────────────────
 
-  // ── Load Recording from Storage ─────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    await loadRecording();
+    bindButtons();
+  } catch (err) {
+    showError(`Failed to load recording: ${err.message}`);
+  }
+});
 
-  /**
-   * Reassemble the recording from storage chunks and set up the video player.
-   * @throws {Error} If no recording data is found
-   */
-  async function loadRecording() {
-    const meta = await chrome.storage.local.get([
-      'pendingRecording',
-      'recording-chunks-count',
-      'recording-mime',
-    ]);
+// ── Load Recording from Storage ─────────────────
 
-    const info = meta.pendingRecording;
-    const chunkCount = meta['recording-chunks-count'];
-    videoMimeType = meta['recording-mime'] || 'video/webm';
+/**
+ * Reassemble the recording from storage chunks and set up the video player.
+ * @throws {Error} If no recording data is found
+ */
+async function loadRecording() {
+  const meta = await chrome.storage.local.get([
+    'pendingRecording',
+    'recording-chunks-count',
+    'recording-mime',
+  ]);
 
-    if (!chunkCount || chunkCount === 0) {
-      throw new Error('No recording data found');
-    }
+  const info = meta.pendingRecording;
+  const chunkCount = meta['recording-chunks-count'];
+  videoMimeType = meta['recording-mime'] || 'video/webm';
 
-    // Read all chunks
-    const chunkKeys = [];
-    for (let i = 0; i < chunkCount; i++) {
-      chunkKeys.push(`recording-chunk-${i}`);
-    }
-
-    const chunkData = await chrome.storage.local.get(chunkKeys);
-
-    // Reassemble into a single Uint8Array
-    const parts = [];
-    let totalLength = 0;
-    for (let i = 0; i < chunkCount; i++) {
-      const arr = chunkData[`recording-chunk-${i}`];
-      if (!arr) throw new Error(`Missing recording chunk ${i}`);
-      totalLength += arr.length;
-      parts.push(new Uint8Array(arr));
-    }
-
-    const combined = new Uint8Array(totalLength);
-    let offset = 0;
-    for (const part of parts) {
-      combined.set(part, offset);
-      offset += part.length;
-    }
-
-    videoBlob = new Blob([combined], { type: videoMimeType });
-
-    // Set up video player
-    const video = document.getElementById('preview-video');
-    videoBlobUrl = URL.createObjectURL(videoBlob);
-    video.src = videoBlobUrl;
-
-    // Display metadata
-    if (info) {
-      const durationSec = Math.floor((info.duration || 0) / 1000);
-      const mm = String(Math.floor(durationSec / 60)).padStart(2, '0');
-      const ss = String(durationSec % 60).padStart(2, '0');
-      document.getElementById('meta-duration').textContent = `${mm}:${ss}`;
-    }
-
-    document.getElementById('meta-size').textContent = formatFileSize(videoBlob.size);
-    document.getElementById('meta-format').textContent = videoMimeType.includes('webm') ? 'WebM' : videoMimeType;
-
-    // Show content, hide loading
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('preview-content').style.display = 'block';
-
-    // Clean up storage (recording data is now in memory)
-    cleanupStorage(chunkCount);
+  if (!chunkCount || chunkCount === 0) {
+    throw new Error('No recording data found');
   }
 
-  /**
-   * Remove recording chunks from chrome.storage.local.
-   * @param {number} chunkCount - Number of chunks to remove
-   */
-  async function cleanupStorage(chunkCount) {
-    const keys = ['pendingRecording', 'recording-chunks-count', 'recording-mime'];
-    for (let i = 0; i < chunkCount; i++) {
-      keys.push(`recording-chunk-${i}`);
-    }
-    await chrome.storage.local.remove(keys);
+  // Read all chunks
+  const chunkKeys = [];
+  for (let i = 0; i < chunkCount; i++) {
+    chunkKeys.push(`recording-chunk-${i}`);
   }
 
-  // ── Button Handlers ─────────────────────────────
+  const chunkData = await chrome.storage.local.get(chunkKeys);
 
-  /** Bind download and discard buttons. */
-  function bindButtons() {
-    document.getElementById('btn-download-webm').addEventListener('click', downloadWebM);
-    document.getElementById('btn-download-mp4').addEventListener('click', downloadMP4);
-    document.getElementById('btn-discard').addEventListener('click', discard);
+  // Reassemble into a single Uint8Array
+  const parts = [];
+  let totalLength = 0;
+  for (let i = 0; i < chunkCount; i++) {
+    const arr = chunkData[`recording-chunk-${i}`];
+    if (!arr) throw new Error(`Missing recording chunk ${i}`);
+    totalLength += arr.length;
+    parts.push(new Uint8Array(arr));
   }
 
-  /** Download the recording as WebM (native format, instant). */
-  function downloadWebM() {
-    if (!videoBlob) return;
-    const url = URL.createObjectURL(videoBlob);
-    const filename = `ScreenBolt_${getTimestamp()}.webm`;
-    triggerDownload(url, filename);
-    // Revoke after a delay to ensure download starts
+  const combined = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const part of parts) {
+    combined.set(part, offset);
+    offset += part.length;
+  }
+
+  videoBlob = new Blob([combined], { type: videoMimeType });
+
+  // Set up video player
+  const video = document.getElementById('preview-video');
+  videoBlobUrl = URL.createObjectURL(videoBlob);
+  video.src = videoBlobUrl;
+
+  // Display metadata
+  if (info) {
+    const durationSec = Math.floor((info.duration || 0) / 1000);
+    const mm = String(Math.floor(durationSec / 60)).padStart(2, '0');
+    const ss = String(durationSec % 60).padStart(2, '0');
+    document.getElementById('meta-duration').textContent = `${mm}:${ss}`;
+  }
+
+  document.getElementById('meta-size').textContent = formatFileSize(videoBlob.size);
+  document.getElementById('meta-format').textContent = videoMimeType.includes('webm') ? 'WebM' : videoMimeType;
+
+  // Show content, hide loading
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('preview-content').style.display = 'block';
+
+  // Clean up storage (recording data is now in memory)
+  cleanupStorage(chunkCount);
+}
+
+/**
+ * Remove recording chunks from chrome.storage.local.
+ * @param {number} chunkCount - Number of chunks to remove
+ */
+async function cleanupStorage(chunkCount) {
+  const keys = ['pendingRecording', 'recording-chunks-count', 'recording-mime'];
+  for (let i = 0; i < chunkCount; i++) {
+    keys.push(`recording-chunk-${i}`);
+  }
+  await chrome.storage.local.remove(keys);
+}
+
+// ── Button Handlers ─────────────────────────────
+
+/** Bind download and discard buttons. */
+function bindButtons() {
+  document.getElementById('btn-download-webm').addEventListener('click', downloadWebM);
+  document.getElementById('btn-download-mp4').addEventListener('click', downloadMP4);
+  document.getElementById('btn-discard').addEventListener('click', discard);
+}
+
+/** Download the recording as WebM (native format, instant). */
+function downloadWebM() {
+  if (!videoBlob) return;
+  const url = URL.createObjectURL(videoBlob);
+  const filename = `ScreenBolt_${getTimestamp()}.webm`;
+  triggerDownload(url, filename);
+  // Revoke after a delay to ensure download starts
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+/**
+ * Download as MP4 using ffmpeg.wasm (bundled locally, core loaded on-demand).
+ * Shows progress bar during conversion.
+ */
+async function downloadMP4() {
+  if (!videoBlob) return;
+
+  const progressContainer = document.getElementById('mp4-progress');
+  const progressBar = document.getElementById('mp4-progress-bar');
+  const statusText = document.getElementById('mp4-status');
+  const btn = document.getElementById('btn-download-mp4');
+
+  btn.disabled = true;
+  progressContainer.style.display = 'block';
+  statusText.textContent = 'Loading ffmpeg.wasm\u2026';
+  progressBar.style.width = '10%';
+
+  try {
+    // Import local ESM modules (bundled in extension, no CDN needed for these)
+    const { FFmpeg } = await import(chrome.runtime.getURL('lib/ffmpeg/ffmpeg.esm.js'));
+    const { fetchFile, toBlobURL } = await import(chrome.runtime.getURL('lib/ffmpeg/util.esm.js'));
+
+    progressBar.style.width = '25%';
+    statusText.textContent = 'Downloading ffmpeg core (~30MB, first time only)\u2026';
+
+    const ffmpeg = new FFmpeg();
+
+    ffmpeg.on('progress', ({ progress }) => {
+      const pct = Math.min(95, 30 + progress * 65);
+      progressBar.style.width = `${pct}%`;
+      statusText.textContent = `Converting\u2026 ${Math.round(progress * 100)}%`;
+    });
+
+    // Load ffmpeg core from CDN via fetch+blobURL (fetch is NOT blocked by CSP)
+    // classWorkerURL points to local worker.js bundled in extension
+    const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm';
+    await ffmpeg.load({
+      classWorkerURL: chrome.runtime.getURL('lib/ffmpeg/worker.js'),
+      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+    });
+
+    progressBar.style.width = '30%';
+    statusText.textContent = 'Converting to MP4\u2026';
+
+    const inputData = await fetchFile(videoBlob);
+    await ffmpeg.writeFile('input.webm', inputData);
+    await ffmpeg.exec(['-i', 'input.webm', '-c:v', 'libx264', '-preset', 'fast', '-crf', '23', '-c:a', 'aac', '-b:a', '128k', 'output.mp4']);
+
+    const data = await ffmpeg.readFile('output.mp4');
+    const mp4Blob = new Blob([data.buffer], { type: 'video/mp4' });
+
+    progressBar.style.width = '100%';
+    statusText.textContent = 'Done! Downloading\u2026';
+
+    const url = URL.createObjectURL(mp4Blob);
+    triggerDownload(url, `ScreenBolt_${getTimestamp()}.mp4`);
     setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+    // Cleanup
+    await ffmpeg.deleteFile('input.webm');
+    await ffmpeg.deleteFile('output.mp4');
+    ffmpeg.terminate();
+
+    setTimeout(() => {
+      progressContainer.style.display = 'none';
+      btn.disabled = false;
+    }, 2000);
+
+  } catch (err) {
+    console.error(LOG_PREFIX, 'MP4 conversion failed:', err);
+    statusText.textContent = `\u274C Conversion failed: ${err.message}`;
+    progressBar.style.width = '0%';
+    btn.disabled = false;
   }
+}
 
-  /**
-   * Download as MP4 — not yet available in MV3 due to ffmpeg.wasm Worker restrictions.
-   * WebM is universally supported. MP4 conversion will be added in a future version.
-   */
-  function downloadMP4() {
-    alert('MP4 conversion is coming soon! For now, WebM is supported by all major players (Chrome, Firefox, VLC, etc.).');
+/** Discard the recording and close the tab. */
+function discard() {
+  if (confirm('Discard this recording? This cannot be undone.')) {
+    cleanup();
+    window.close();
   }
+}
 
-  /** Discard the recording and close the tab. */
-  function discard() {
-    if (confirm('Discard this recording? This cannot be undone.')) {
-      cleanup();
-      window.close();
-    }
+// ── Helpers ───────────────────────────────────────
+
+/**
+ * Trigger a file download via chrome.downloads API.
+ * @param {string} url - Object URL or data URL to download
+ * @param {string} filename - Target filename
+ */
+function triggerDownload(url, filename) {
+  chrome.downloads.download({ url, filename, saveAs: true });
+}
+
+/**
+ * Generate a formatted timestamp for filenames.
+ * @returns {string} Compact timestamp
+ */
+function getTimestamp() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+}
+
+/**
+ * Format a byte count into a human-readable file size.
+ * @param {number} bytes - Size in bytes
+ * @returns {string} Formatted size string
+ */
+function formatFileSize(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+
+/**
+ * Show an error message and hide the loading state.
+ * @param {string} msg - Error message
+ */
+function showError(msg) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('error-container').style.display = 'block';
+  document.getElementById('error-msg').textContent = `\u26A0\uFE0F ${msg}`;
+}
+
+/**
+ * Clean up resources: revoke Object URLs and release blob.
+ */
+function cleanup() {
+  if (videoBlobUrl) {
+    URL.revokeObjectURL(videoBlobUrl);
+    videoBlobUrl = null;
   }
+  videoBlob = null;
+}
 
-  // ── Helpers ───────────────────────────────────────
+// Cleanup on page hide (pagehide is preferred over beforeunload for bfcache compatibility)
+window.addEventListener('pagehide', cleanup);
 
-  /**
-   * Trigger a file download via chrome.downloads API.
-   * @param {string} url - Object URL or data URL to download
-   * @param {string} filename - Target filename
-   */
-  function triggerDownload(url, filename) {
-    chrome.downloads.download({ url, filename, saveAs: true });
-  }
-
-  /**
-   * Generate a formatted timestamp for filenames.
-   * @returns {string} Compact timestamp
-   */
-  function getTimestamp() {
-    const d = new Date();
-    const pad = (n) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
-  }
-
-  /**
-   * Format a byte count into a human-readable file size.
-   * @param {number} bytes - Size in bytes
-   * @returns {string} Formatted size string
-   */
-  function formatFileSize(bytes) {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-  }
-
-  /**
-   * Show an error message and hide the loading state.
-   * @param {string} msg - Error message
-   */
-  function showError(msg) {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('error-container').style.display = 'block';
-    document.getElementById('error-msg').textContent = `\u26A0\uFE0F ${msg}`;
-  }
-
-  /**
-   * Clean up resources: revoke Object URLs and release blob.
-   */
-  function cleanup() {
-    if (videoBlobUrl) {
-      URL.revokeObjectURL(videoBlobUrl);
-      videoBlobUrl = null;
-    }
-    videoBlob = null;
-  }
-
-  // Cleanup on page hide (pagehide is preferred over beforeunload for bfcache compatibility)
-  window.addEventListener('pagehide', cleanup);
-})();
