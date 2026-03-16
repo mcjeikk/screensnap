@@ -166,9 +166,11 @@ async function downloadMP4() {
     const ffmpeg = new FFmpeg();
 
     ffmpeg.on('progress', ({ progress }) => {
-      const pct = Math.min(95, 30 + progress * 65);
+      // ffmpeg.wasm can report negative or >1 values; clamp to 0-100
+      const clamped = Math.max(0, Math.min(1, progress));
+      const pct = Math.min(95, 30 + clamped * 65);
       progressBar.style.width = `${pct}%`;
-      statusText.textContent = `Converting\u2026 ${Math.round(progress * 100)}%`;
+      statusText.textContent = `Converting\u2026 ${Math.round(clamped * 100)}%`;
     });
 
     progressBar.style.width = '20%';

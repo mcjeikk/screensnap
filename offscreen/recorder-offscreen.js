@@ -127,24 +127,34 @@
 
     mainStream = await acquireMainStream(config);
 
-    // Microphone
+    // Microphone — check permission first (offscreen can't show prompts)
     if (config.microphone) {
       try {
-        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const micPerm = await navigator.permissions.query({ name: 'microphone' });
+        if (micPerm.state === 'granted') {
+          micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } else {
+          console.info(LOG_PREFIX, 'Mic permission not granted, skipping (use Grant Permissions button)');
+        }
       } catch (err) {
-        console.warn(LOG_PREFIX, 'Mic access denied:', err.message);
+        console.warn(LOG_PREFIX, 'Mic access error:', err.message);
       }
     }
 
-    // Webcam for PiP
+    // Webcam for PiP — check permission first
     if (config.pip && config.source !== 'camera') {
       try {
-        webcamStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: 320, height: 320 },
-          audio: false,
-        });
+        const camPerm = await navigator.permissions.query({ name: 'camera' });
+        if (camPerm.state === 'granted') {
+          webcamStream = await navigator.mediaDevices.getUserMedia({
+            video: { width: 320, height: 320 },
+            audio: false,
+          });
+        } else {
+          console.info(LOG_PREFIX, 'Camera permission not granted, skipping (use Grant Permissions button)');
+        }
       } catch (err) {
-        console.warn(LOG_PREFIX, 'Webcam for PiP denied:', err.message);
+        console.warn(LOG_PREFIX, 'Webcam for PiP error:', err.message);
       }
     }
 
