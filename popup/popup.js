@@ -126,18 +126,10 @@
       });
     }
 
-    // PiP toggle — check camera permission when enabled, save state
-    document.getElementById('opt-pip').addEventListener('change', async (e) => {
+    // PiP toggle — no permission check needed here.
+    // Camera permission is requested by the content script on the page when recording starts.
+    document.getElementById('opt-pip').addEventListener('change', (e) => {
       document.getElementById('pip-options').style.display = e.target.checked ? 'block' : 'none';
-      if (e.target.checked) {
-        const granted = await isPermissionGranted('camera');
-        if (!granted) {
-          e.target.checked = false;
-          document.getElementById('pip-options').style.display = 'none';
-          openPermissionsPage('camera');
-          return;
-        }
-      }
       saveRecordingConfig();
     });
   }

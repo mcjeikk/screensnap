@@ -137,20 +137,10 @@
       }
     }
 
-    // PiP webcam — acquire in offscreen (extension origin, permission already granted)
-    if (config.pip && config.source !== 'camera') {
-      try {
-        webcamStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 360 }, height: { ideal: 360 } },
-          audio: false,
-        });
-        console.info(LOG_PREFIX, 'Webcam acquired for PiP');
-      } catch (err) {
-        console.warn(LOG_PREFIX, 'Webcam not available for PiP:', err.message);
-      }
-    }
+    // PiP webcam is handled by the content script (visible on page, captured by tabCapture)
+    // Offscreen only records the tab stream — the webcam bubble is part of the tab content
 
-    combinedStream = buildCombinedStream(mainStream, micStream, webcamStream, config);
+    combinedStream = buildCombinedStream(mainStream, micStream, null, config);
 
     // Play back tab audio to the user — chrome.tabCapture mutes the tab
     if (config.source === 'tab' && mainStream && mainStream.getAudioTracks().length > 0) {

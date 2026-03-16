@@ -499,7 +499,17 @@ async function continueStartRecording(config) {
     if (targetTabId) {
       await injectRecordingWidget(targetTabId);
 
-      // PiP webcam is now handled entirely in the offscreen document
+      // If PiP webcam is enabled, tell the content script to show the bubble
+      if (config.pip) {
+        try {
+          await chrome.tabs.sendMessage(targetTabId, {
+            action: 'setup-webcam-pip',
+            config: { pip: true, pipPosition: config.pipPosition, pipSize: config.pipSize },
+          });
+        } catch (err) {
+          log.warn('Failed to setup webcam PiP on page:', err.message);
+        }
+      }
     }
 
     log.info(`Recording started: source=${config.source}, tab=${targetTabId}`);

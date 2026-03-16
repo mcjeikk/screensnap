@@ -299,6 +299,114 @@
     }
   }
 
+  // ── PiP Webcam Bubble ───────────────────────────
+  // Visible on the page so tabCapture captures it automatically.
+  // Permission prompt is standard browser behavior (once per site).
+
+  let webcamStream = null;
+  let webcamBubble = null;
+
+  async function setupWebcamBubble(config) {
+    if (!config?.pip) return;
+
+    const size = { small: 120, medium: 180, large: 240 }[config.pipSize] || 180;
+    const pos = config.pipPosition || 'bottom-right';
+    const margin = 20;
+
+    try {
+      webcamStream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: size * 2 }, height: { ideal: size * 2 } },
+        audio: false,
+      });
+    } catch (err) {
+      console.warn('[ScreenBolt][Widget] Webcam not available:', err.message);
+      return;
+    }
+
+    const video = document.createElement('video');
+    video.srcObject = webcamStream;
+    video.autoplay = true;
+    video.muted = true;
+    video.playsInline = true;
+
+    webcamBubble = document.createElement('div');
+    webcamBubble.className = 'webcam-bubble';
+    webcamBubble.appendChild(video);
+
+    const posStyle = {
+      'top-left': `top: ${margin}px; left: ${margin}px;`,
+      'top-right': `top: ${margin}px; right: ${margin}px;`,
+      'bottom-left': `bottom: ${margin + 60}px; left: ${margin}px;`,
+      'bottom-right': `bottom: ${margin + 60}px; right: ${margin}px;`,
+    }[pos] || `bottom: ${margin + 60}px; right: ${margin}px;`;
+
+    const webcamStyle = document.createElement('style');
+    webcamStyle.textContent = `
+      .webcam-bubble {
+        position: fixed;
+        ${posStyle}
+        width: ${size}px;
+        height: ${size}px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid rgba(255,255,255,0.8);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        z-index: 2147483646;
+        cursor: grab;
+        transition: box-shadow 0.2s;
+      }
+      .webcam-bubble:hover {
+        box-shadow: 0 6px 28px rgba(0,0,0,0.7);
+      }
+      .webcam-bubble video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: scaleX(-1);
+        pointer-events: none;
+      }
+    `;
+    shadow.appendChild(webcamStyle);
+    shadow.appendChild(webcamBubble);
+
+    // Draggable
+    let bd = false, bx = 0, by = 0;
+    webcamBubble.addEventListener('mousedown', (e) => {
+      bd = true;
+      bx = e.clientX - webcamBubble.getBoundingClientRect().left;
+      by = e.clientY - webcamBubble.getBoundingClientRect().top;
+      webcamBubble.style.cursor = 'grabbing';
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (!bd) return;
+      webcamBubble.style.position = 'fixed';
+      webcamBubble.style.left = `${e.clientX - bx}px`;
+      webcamBubble.style.top = `${e.clientY - by}px`;
+      webcamBubble.style.right = 'auto';
+      webcamBubble.style.bottom = 'auto';
+    });
+    document.addEventListener('mouseup', () => {
+      if (bd) { bd = false; webcamBubble.style.cursor = 'grab'; }
+    });
+  }
+
+  function cleanupWebcam() {
+    if (webcamStream) {
+      webcamStream.getTracks().forEach(t => t.stop());
+      webcamStream = null;
+    }
+    if (webcamBubble) { webcamBubble.remove(); webcamBubble = null; }
+  }
+
+  // Listen for PiP setup from service worker
+  chrome.runtime.onMessage.addListener((msg) => {
+    if (msg && msg.action === 'setup-webcam-pip') {
+      setupWebcamBubble(msg.config);
+    }
+  });
+
   /**
    * Remove the widget from the DOM and clean up resources.
    */
@@ -307,6 +415,7 @@
       clearInterval(timerInterval);
       timerInterval = null;
     }
+    cleanupWebcam();
     host.remove();
   }
 })();
