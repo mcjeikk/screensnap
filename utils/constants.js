@@ -233,4 +233,4 @@ export const BADGE_RECORDING_COLOR = '#EF4444';
 export const EXTENSION_NAME = 'ScreenBolt';
 
 /** @type {string} Current version */
-export const VERSION = '0.7.3';
+export const VERSION = '0.7.4';
