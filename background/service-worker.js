@@ -235,6 +235,35 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return false;
   }
 
+  // CRITICAL: For start-recording, call tabCapture IMMEDIATELY in the user gesture
+  // chain — before initPromise.then() which breaks the gesture chain.
+  if (message.action === 'start-recording' && message.config?.source === 'tab') {
+    const [activeTab] = []; // placeholder
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const targetTabId = tabs[0]?.id;
+      if (!targetTabId) {
+        sendResponse({ success: false, error: 'No active tab found' });
+        return;
+      }
+      // Call getMediaStreamId SYNCHRONOUSLY in the user gesture callback chain
+      chrome.tabCapture.getMediaStreamId({ targetTabId }, (streamId) => {
+        if (chrome.runtime.lastError || !streamId) {
+          sendResponse({ success: false, error: chrome.runtime.lastError?.message || 'Failed to get stream ID' });
+          return;
+        }
+        // Now continue async with the streamId already obtained
+        const configWithStream = { ...message.config, streamId, targetTabId };
+        initPromise.then(() => continueStartRecording(configWithStream))
+          .then((result) => sendResponse(result))
+          .catch((err) => {
+            log.error('Start recording failed:', err.message);
+            sendResponse({ success: false, error: err.message });
+          });
+      });
+    });
+    return true; // Keep channel open
+  }
+
   initPromise.then(() => handler(message, sender))
     .then((result) => sendResponse(result))
     .catch((err) => {
@@ -432,37 +461,28 @@ async function copyToClipboard(dataUrl) {
  * @param {chrome.runtime.MessageSender} sender - Message sender
  * @returns {Promise<{success: boolean, error?: string}>}
  */
-async function handleStartRecording(config, sender) {
+/**
+ * Continue start recording after streamId is obtained (for tab capture)
+ * or handle screen/camera sources.
+ * @param {Object} config - Config with streamId and targetTabId already set (for tab)
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+async function continueStartRecording(config) {
   const currentState = await getRecordingState();
   if (currentState.isRecording) {
     return { success: false, error: 'A recording is already in progress' };
   }
 
-  // Get the active tab (the one the user was on when they clicked in popup)
-  const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!activeTab?.id) {
-    return { success: false, error: 'No active tab found' };
-  }
-
-  const targetTabId = activeTab.id;
-  let streamId = null;
+  const targetTabId = config.targetTabId;
 
   try {
-    // Acquire stream ID based on source
-    if (config.source === 'tab') {
-      streamId = await getTabCaptureStreamId(targetTabId);
-    } else if (config.source === 'screen') {
-      streamId = await getDesktopCaptureStreamId(activeTab);
-    }
-    // Camera doesn't need a streamId — offscreen uses getUserMedia directly
-
     // Create/ensure offscreen document
     await ensureRecorderOffscreen();
 
     // Send config + streamId to offscreen to start recording
     const offscreenResponse = await chrome.runtime.sendMessage({
       action: 'offscreen-start-recording',
-      config: { ...config, streamId },
+      config,
     });
 
     if (!offscreenResponse?.success) {
@@ -476,22 +496,32 @@ async function handleStartRecording(config, sender) {
     await startKeepalive();
 
     // Inject floating widget into the user's tab
-    await injectRecordingWidget(targetTabId);
-
-    // Handle countdown (3-2-1) — if enabled, it's cosmetic via the widget
-    // The offscreen document starts recording immediately; the widget shows the countdown
-    // (Keeping it simple: countdown was in the old recorder page, now recording starts directly)
+    if (targetTabId) {
+      await injectRecordingWidget(targetTabId);
+    }
 
     log.info(`Recording started: source=${config.source}, tab=${targetTabId}`);
     return { success: true };
 
   } catch (err) {
     log.error('Start recording failed:', err.message);
-    // Clean up on failure
     await setRecordingState({ isRecording: false, targetTabId: null });
     await chrome.action.setBadgeText({ text: '' });
     return { success: false, error: err.message };
   }
+}
+
+async function handleStartRecording(config, sender) {
+  // For screen and camera sources (tab is handled in the message listener directly)
+  const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const targetTabId = activeTab?.id;
+
+  let streamId = null;
+  if (config.source === 'screen') {
+    streamId = await getDesktopCaptureStreamId(activeTab);
+  }
+
+  return continueStartRecording({ ...config, streamId, targetTabId });
 }
 
 /**
