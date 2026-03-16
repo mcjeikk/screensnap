@@ -1,0 +1,80 @@
+{
+  "extensionName": {
+    "message": "ScreenSnap",
+    "description": "Extension display name"
+  },
+  "extensionDescription": {
+    "message": "Ferramenta gratuita de captura de tela e gravação. Capture, anote e grave — sem limites, sem conta, 100% local.",
+    "description": "Extension description shown in Chrome Web Store and extension management"
+  },
+  "captureVisible": {
+    "message": "Capturar Área Visível",
+    "description": "Button label for visible area screenshot"
+  },
+  "captureFullPage": {
+    "message": "Capturar Página Inteira",
+    "description": "Button label for full page screenshot"
+  },
+  "captureSelection": {
+    "message": "Capturar Seleção",
+    "description": "Button label for area selection screenshot"
+  },
+  "recordTab": {
+    "message": "Gravar Aba",
+    "description": "Button label for tab recording"
+  },
+  "recordScreen": {
+    "message": "Gravar Tela",
+    "description": "Button label for screen recording"
+  },
+  "recordCamera": {
+    "message": "Gravar Câmera",
+    "description": "Button label for camera recording"
+  },
+  "history": {
+    "message": "Histórico",
+    "description": "Link text for history page"
+  },
+  "settings": {
+    "message": "Configurações",
+    "description": "Link text for settings page"
+  },
+  "screenshotSaved": {
+    "message": "Captura salva!",
+    "description": "Notification title after saving a screenshot"
+  },
+  "screenshotCopied": {
+    "message": "Captura copiada!",
+    "description": "Notification title after copying to clipboard"
+  },
+  "recordingSaved": {
+    "message": "Gravação salva!",
+    "description": "Notification title after saving a recording"
+  },
+  "recordingInterrupted": {
+    "message": "Gravação Interrompida",
+    "description": "Notification title when recording is interrupted by SW termination"
+  },
+  "refreshBanner": {
+    "message": "ScreenSnap foi atualizado. Atualize esta página para continuar usando.",
+    "description": "Banner message shown when extension context is invalidated"
+  },
+  "selectionInstructions": {
+    "message": "Clique e arraste para selecionar a área • ESC para cancelar",
+    "description": "Instructions shown during area selection"
+  },
+  "restrictedUrl": {
+    "message": "Não é possível capturar esta página (URL restrita)",
+    "description": "Error message for chrome:// and other restricted pages"
+  },
+  "pageTooLarge": {
+    "message": "Página muito grande para capturar (mais de $MAX_HEIGHT$ pixels de altura). Tente capturar a área visível.",
+    "description": "Error when full-page capture would exceed memory limits",
+    "placeholders": {
+      "MAX_HEIGHT": {
+        "content": "$1",
+        "example": "15000"
+      }
+    }
+  }
+}
