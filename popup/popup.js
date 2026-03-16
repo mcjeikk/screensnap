@@ -95,7 +95,7 @@
             stream.getTracks().forEach(t => t.stop());
           } catch {
             e.target.checked = false;
-            showToast('Microphone permission denied');
+            showRecError('Microphone permission denied');
           }
         }
       });
@@ -111,7 +111,7 @@
         } catch {
           e.target.checked = false;
           document.getElementById('pip-options').style.display = 'none';
-          showToast('Camera permission denied');
+          showRecError('Camera permission denied');
         }
       }
     });
