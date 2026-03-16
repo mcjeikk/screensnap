@@ -15,14 +15,97 @@
       </div>
 
       <div class="toolbar-center">
-        <!-- Annotation tools — Sprint 2 -->
-        <div class="tool-group" id="annotation-tools" style="display: none;">
-          <button class="tool-btn" data-tool="arrow" title="Arrow">➡️</button>
-          <button class="tool-btn" data-tool="rect" title="Rectangle">▭</button>
-          <button class="tool-btn" data-tool="circle" title="Circle">◯</button>
-          <button class="tool-btn" data-tool="text" title="Text">T</button>
-          <button class="tool-btn" data-tool="blur" title="Blur">🔲</button>
-          <button class="tool-btn" data-tool="highlight" title="Highlight">🖍️</button>
+        <!-- Annotation tools -->
+        <div class="tool-group" id="annotation-tools">
+          <button class="tool-btn" data-tool="arrow" title="Arrow (A)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <line x1="2" y1="14" x2="12" y2="4"/>
+              <polyline points="7,3 13,3 13,9"/>
+            </svg>
+          </button>
+          <button class="tool-btn" data-tool="rect" title="Rectangle (R)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="3" width="12" height="10" rx="2"/>
+            </svg>
+          </button>
+          <button class="tool-btn" data-tool="circle" title="Ellipse (E)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <ellipse cx="8" cy="8" rx="6" ry="5"/>
+            </svg>
+          </button>
+          <button class="tool-btn" data-tool="line" title="Line (L)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <line x1="2" y1="14" x2="14" y2="2"/>
+            </svg>
+          </button>
+          <button class="tool-btn" data-tool="freehand" title="Pen (P)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 14 C4 10, 6 6, 8 8 C10 10, 12 4, 14 2"/>
+            </svg>
+          </button>
+          <button class="tool-btn" data-tool="text" title="Text (T)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+              <line x1="3" y1="3" x2="13" y2="3"/>
+              <line x1="8" y1="3" x2="8" y2="14"/>
+              <line x1="5" y1="14" x2="11" y2="14"/>
+            </svg>
+          </button>
+          <button class="tool-btn" data-tool="blur" title="Blur/Pixelate (B)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" opacity="0.7">
+              <rect x="1" y="1" width="4" height="4" rx="1"/>
+              <rect x="6" y="1" width="4" height="4" rx="1" opacity="0.5"/>
+              <rect x="11" y="1" width="4" height="4" rx="1"/>
+              <rect x="1" y="6" width="4" height="4" rx="1" opacity="0.5"/>
+              <rect x="6" y="6" width="4" height="4" rx="1"/>
+              <rect x="11" y="6" width="4" height="4" rx="1" opacity="0.5"/>
+              <rect x="1" y="11" width="4" height="4" rx="1"/>
+              <rect x="6" y="11" width="4" height="4" rx="1" opacity="0.5"/>
+              <rect x="11" y="11" width="4" height="4" rx="1"/>
+            </svg>
+          </button>
+          <button class="tool-btn" data-tool="highlight" title="Highlight (H)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="5" width="12" height="6" rx="1" fill="#FFD600" opacity="0.5"/>
+              <line x1="4" y1="8" x2="12" y2="8" stroke="#333" stroke-width="1.5"/>
+            </svg>
+          </button>
+          <button class="tool-btn" data-tool="crop" title="Crop (C)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M4 1 L4 12 L15 12"/>
+              <path d="M12 15 L12 4 L1 4"/>
+            </svg>
+          </button>
+
+          <span class="tool-separator"></span>
+
+          <!-- Color picker -->
+          <label class="color-picker-wrapper" title="Annotation color">
+            <input type="color" id="color-picker" value="#FF0000">
+            <span class="color-preview" id="color-preview"></span>
+          </label>
+
+          <!-- Stroke width -->
+          <select id="stroke-width" class="stroke-select" title="Stroke width">
+            <option value="2">Thin</option>
+            <option value="4" selected>Medium</option>
+            <option value="6">Thick</option>
+          </select>
+
+          <span class="tool-separator"></span>
+
+          <!-- Undo / Redo -->
+          <button class="tool-btn" id="btn-undo" title="Undo (Ctrl+Z)" disabled>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 7 L7 3 M3 7 L7 11"/>
+              <path d="M3 7 H10 A3 3 0 0 1 13 10 A3 3 0 0 1 10 13 H8"/>
+            </svg>
+          </button>
+          <button class="tool-btn" id="btn-redo" title="Redo (Ctrl+Shift+Z)" disabled>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M13 7 L9 3 M13 7 L9 11"/>
+              <path d="M13 7 H6 A3 3 0 0 0 3 10 A3 3 0 0 0 6 13 H8"/>
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -45,11 +128,16 @@
     <!-- Canvas Area -->
     <div class="canvas-wrapper" id="canvas-wrapper">
       <canvas id="editor-canvas"></canvas>
+      <!-- Crop confirm button (hidden by default) -->
+      <button id="btn-crop-apply" class="crop-apply-btn" style="display:none;">✂️ Apply Crop</button>
+      <!-- Text input overlay (hidden by default) -->
+      <textarea id="text-input-overlay" class="text-input-overlay" style="display:none;" placeholder="Type here…"></textarea>
     </div>
 
     <!-- Status Bar -->
     <div class="status-bar">
       <span id="status-dimensions">-</span>
+      <span id="status-tool">Tool: None</span>
       <span id="status-size">-</span>
     </div>
   </div>

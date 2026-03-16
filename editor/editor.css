@@ -1,12 +1,15 @@
-/* ScreenSnap — Editor Styles */
+/* ScreenSnap — Editor Styles (v0.2.0) */
 
 :root {
   --primary: #4F46E5;
+  --primary-hover: #4338CA;
   --bg: #1a1a2e;
   --bg-toolbar: #16213e;
   --text: #e0e0e0;
   --text-muted: #8892b0;
   --border: #2d3548;
+  --danger: #DC2626;
+  --success: #059669;
 }
 
 * {
@@ -29,36 +32,62 @@ body {
   height: 100vh;
 }
 
-/* Toolbar */
+/* ── Toolbar ── */
 .toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
+  padding: 6px 12px;
   background: var(--bg-toolbar);
   border-bottom: 1px solid var(--border);
-  gap: 16px;
+  gap: 12px;
   flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .toolbar-brand {
   font-weight: 700;
   font-size: 14px;
   color: var(--primary);
+  white-space: nowrap;
 }
 
 .toolbar-center {
   display: flex;
   gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .toolbar-right {
   display: flex;
   gap: 6px;
+  flex-shrink: 0;
 }
 
+.tool-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.tool-separator {
+  width: 1px;
+  height: 22px;
+  background: var(--border);
+  margin: 0 6px;
+  flex-shrink: 0;
+}
+
+/* ── Tool buttons ── */
 .tool-btn {
-  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   background: transparent;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -76,8 +105,19 @@ body {
 .tool-btn.active {
   background: var(--primary);
   border-color: var(--primary);
+  color: #fff;
 }
 
+.tool-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.tool-btn svg {
+  pointer-events: none;
+}
+
+/* ── Action buttons ── */
 .action-btn {
   padding: 6px 14px;
   background: rgba(255, 255, 255, 0.08);
@@ -102,11 +142,57 @@ body {
 }
 
 .action-primary:hover {
-  background: #4338CA;
+  background: var(--primary-hover);
 }
 
-/* Canvas Area */
+/* ── Color picker ── */
+.color-picker-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.color-picker-wrapper input[type="color"] {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.color-preview {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: #FF0000;
+  transition: border-color 0.15s;
+}
+
+.color-picker-wrapper:hover .color-preview {
+  border-color: var(--primary);
+}
+
+/* ── Stroke width select ── */
+.stroke-select {
+  padding: 4px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.stroke-select:focus {
+  border-color: var(--primary);
+}
+
+/* ── Canvas Area ── */
 .canvas-wrapper {
+  position: relative;
   flex: 1;
   display: flex;
   align-items: center;
@@ -114,7 +200,7 @@ body {
   overflow: auto;
   padding: 20px;
   background: var(--bg);
-  /* Checkerboard pattern for transparency */
+  /* Checkerboard for transparency */
   background-image:
     linear-gradient(45deg, #222 25%, transparent 25%),
     linear-gradient(-45deg, #222 25%, transparent 25%),
@@ -131,7 +217,52 @@ body {
   border-radius: 4px;
 }
 
-/* Status Bar */
+/* Canvas cursor overrides */
+#editor-canvas.cursor-crosshair { cursor: crosshair; }
+#editor-canvas.cursor-text { cursor: text; }
+#editor-canvas.cursor-move { cursor: move; }
+#editor-canvas.cursor-crop { cursor: crosshair; }
+
+/* ── Crop apply button ── */
+.crop-apply-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 8px 18px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+  transition: background 0.15s;
+}
+
+.crop-apply-btn:hover {
+  background: var(--primary-hover);
+}
+
+/* ── Text input overlay ── */
+.text-input-overlay {
+  position: absolute;
+  min-width: 120px;
+  min-height: 32px;
+  padding: 4px 6px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 2px solid var(--primary);
+  border-radius: 4px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 16px;
+  resize: both;
+  outline: none;
+  z-index: 40;
+}
+
+/* ── Status Bar ── */
 .status-bar {
   display: flex;
   justify-content: space-between;
@@ -141,4 +272,10 @@ body {
   font-size: 12px;
   color: var(--text-muted);
   flex-shrink: 0;
+}
+
+/* ── Toast animation ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
