@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>MP4 Converter (Sandboxed)</title>
-  <!-- Sandbox pages have relaxed CSP — external scripts ARE allowed via script tags -->
-  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
+  <!-- Local UMD builds — sandbox CSP only allows 'self' for scripts -->
+  <script src="vendor/ffmpeg.js"></script>
+  <script src="vendor/ffmpeg-util.js"></script>
 </head>
 <body>
   <script>
     /**
-     * Sandboxed MP4 converter using ffmpeg.wasm UMD builds.
+     * Sandboxed MP4 converter using ffmpeg.wasm.
      * UMD globals: FFmpegWASM.FFmpeg, FFmpegUtil.toBlobURL/fetchFile
+     * Sandbox allows unsafe-eval + blob: URLs (needed for ffmpeg Workers).
+     * The heavy core (~32MB .wasm) loads on-demand from CDN via fetch+blobURL.
      */
 
     let ffmpegLoaded = false;
@@ -29,6 +31,7 @@
 
       sendProgress('loading', 0.3);
 
+      // Core WASM loaded via fetch → blobURL (not a script, bypasses CSP)
       const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';
       await ffmpeg.load({
         coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
@@ -52,7 +55,6 @@
 
         sendProgress('converting', 0);
 
-        const { fetchFile } = FFmpegUtil;
         const inputData = new Uint8Array(webmData);
         await ffmpeg.writeFile('input.webm', inputData);
         await ffmpeg.exec([
