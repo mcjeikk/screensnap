@@ -1,8 +1,8 @@
 /**
- * @file ScreenSnap — Welcome / Onboarding Page v0.4.1
+ * @file ScreenSnap — Welcome / Onboarding Page v0.5.0
  * @description Shown once on first install via chrome.runtime.onInstalled.
  * Provides a multi-slide onboarding experience with keyboard navigation.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 (() => {

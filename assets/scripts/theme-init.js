@@ -4,7 +4,7 @@
  * to prevent flash of unstyled/wrong-themed content. Also installs global
  * error handlers for uncaught exceptions and unhandled promise rejections.
  * Must be loaded synchronously in the <head> of every page.
- * @version 0.4.2
+ * @version 0.5.0
  */
 
 // ── Global Error Boundaries ─────────────────────────

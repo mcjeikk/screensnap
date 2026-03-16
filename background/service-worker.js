@@ -1,12 +1,12 @@
 /**
- * @file ScreenSnap — Background Service Worker v0.4.2 (MV3)
+ * @file ScreenSnap — Background Service Worker v0.5.0 (MV3)
  * @description Central coordinator for the extension. Handles capture commands,
  * keyboard shortcuts, recording state, notifications, onInstalled events,
  * and history management. Uses a message router pattern for clean dispatch.
  *
  * NOTE: Service workers can terminate after 30s of inactivity.
  * State is persisted via chrome.storage, not global variables.
- * @version 0.4.2
+ * @version 0.5.0
  */
 
 // ── Imports (not available without "type": "module" — using inline for MV3 compat) ──
@@ -392,10 +392,30 @@ async function copyToClipboard(dataUrl) {
       action: MESSAGE_TYPES.OFFSCREEN_COPY_CLIPBOARD,
       dataUrl,
     });
+    // Clean up offscreen document after use to free resources
+    await closeOffscreenDocument();
     return { success: true };
   } catch (err) {
     log('ERROR', 'Clipboard copy failed:', err.message);
     return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Close the offscreen document if it exists.
+ * Called after clipboard operations to free resources.
+ * @returns {Promise<void>}
+ */
+async function closeOffscreenDocument() {
+  try {
+    const existingContexts = await chrome.runtime.getContexts({
+      contextTypes: ['OFFSCREEN_DOCUMENT'],
+    });
+    if (existingContexts.length > 0) {
+      await chrome.offscreen.closeDocument();
+    }
+  } catch (err) {
+    log('DEBUG', 'Offscreen close skipped:', err.message);
   }
 }
 
@@ -447,6 +467,7 @@ async function onRecordingStarted(sender) {
 
   await chrome.action.setBadgeText({ text: 'REC' });
   await chrome.action.setBadgeBackgroundColor({ color: BADGE_RECORDING_COLOR });
+  await startKeepalive();
 
   try {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -520,6 +541,7 @@ async function onRecordingStopped() {
   }
 
   await setRecordingState({ isRecording: false, recorderTabId: null, recordingTargetTabId: null });
+  await stopKeepalive();
   return { success: true };
 }
 
@@ -703,6 +725,65 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
     }
   } catch (err) {
     log('WARN', 'Tab removal cleanup error:', err.message);
+  }
+});
+
+// ── Service Worker Lifecycle Events ──────────────
+
+/**
+ * Handle service worker startup (browser launch, not install).
+ * Recovers recording state and cleans up stale data.
+ */
+chrome.runtime.onStartup.addListener(async () => {
+  log('INFO', 'Service worker startup — recovering state');
+  const state = await getRecordingState();
+  if (state.isRecording) {
+    // Recording was active when browser closed — badge may be stale
+    log('WARN', 'Found stale recording state on startup — cleaning up');
+    await setRecordingState({ isRecording: false, recorderTabId: null, recordingTargetTabId: null });
+    await chrome.action.setBadgeText({ text: '' });
+  }
+});
+
+/**
+ * Handle service worker suspension.
+ * Logs the event for debugging; critical state is already in chrome.storage.session.
+ */
+chrome.runtime.onSuspend.addListener(() => {
+  log('INFO', 'Service worker suspending');
+});
+
+// ── Keepalive during recording ──────────────────
+
+/** @type {number|null} Keepalive alarm name */
+const KEEPALIVE_ALARM_NAME = 'screensnap-keepalive';
+
+/**
+ * Start a periodic alarm to keep the service worker alive during recording.
+ * Chrome alarms minimum interval is 30s; this prevents SW termination mid-recording.
+ */
+async function startKeepalive() {
+  await chrome.alarms.create(KEEPALIVE_ALARM_NAME, { periodInMinutes: 0.5 });
+  log('DEBUG', 'Keepalive alarm started');
+}
+
+/**
+ * Stop the keepalive alarm when recording ends.
+ */
+async function stopKeepalive() {
+  await chrome.alarms.clear(KEEPALIVE_ALARM_NAME);
+  log('DEBUG', 'Keepalive alarm stopped');
+}
+
+/**
+ * Alarm listener — keepalive pings during active recording.
+ */
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name === KEEPALIVE_ALARM_NAME) {
+    const state = await getRecordingState();
+    if (!state.isRecording) {
+      await stopKeepalive();
+    }
   }
 });
 

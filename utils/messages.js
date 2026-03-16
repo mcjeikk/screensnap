@@ -2,7 +2,7 @@
  * @file ScreenSnap — Message Passing Utility
  * @description Type-safe message sending/receiving helpers and message validation.
  * Provides consistent message format across all extension components.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 import { MESSAGE_TYPES } from './constants.js';

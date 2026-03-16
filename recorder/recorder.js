@@ -1,10 +1,10 @@
 /**
- * @file ScreenSnap — Recorder Script v0.4.1
+ * @file ScreenSnap — Recorder Script v0.5.0
  * @description Handles recording configuration, stream setup, MediaRecorder management,
  * PiP canvas compositing, and audio controls. Runs inside recorder.html as the
  * recording hub (MV3 compatible). Ensures all MediaStreams and resources are
  * properly cleaned up on stop/error.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 (() => {

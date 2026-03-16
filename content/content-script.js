@@ -3,7 +3,7 @@
  * @description Handles selection overlay for area capture and full-page scroll-and-stitch capture.
  * Injected into web pages to interact with page DOM for capturing purposes.
  * Uses AbortController for clean event listener management.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 (() => {
@@ -34,9 +34,79 @@
   /** @type {AbortController|null} */
   let selectionAbortController = null;
 
+  // ── Context Validation ─────────────────────────────
+
+  /**
+   * Check if the extension context is still valid.
+   * Returns false after extension update/reload while content script is still injected.
+   * @returns {boolean}
+   */
+  function isContextValid() {
+    try {
+      chrome.runtime.getURL('');
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Safely send a message to the service worker with context invalidation handling.
+   * @param {Object} message - Message to send
+   * @returns {Promise<*>} Response from the service worker
+   */
+  async function safeSendMessage(message) {
+    try {
+      return await chrome.runtime.sendMessage(message);
+    } catch (error) {
+      if (error.message?.includes('Extension context invalidated')) {
+        console.warn(LOG_PREFIX, 'Extension was updated. Please refresh the page.');
+        showRefreshBanner();
+        return null;
+      }
+      if (error.message?.includes('Could not establish connection')) {
+        console.warn(LOG_PREFIX, 'Service worker not available. Retrying...');
+        // Retry once after a short delay (SW may be restarting)
+        await delay(500);
+        try {
+          return await chrome.runtime.sendMessage(message);
+        } catch {
+          console.error(LOG_PREFIX, 'Retry failed — service worker unreachable');
+          return null;
+        }
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Show a non-intrusive banner asking the user to refresh the page.
+   */
+  function showRefreshBanner() {
+    if (document.getElementById('screensnap-refresh-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'screensnap-refresh-banner';
+    banner.style.cssText =
+      'position:fixed;top:0;left:0;right:0;z-index:2147483647;' +
+      'padding:10px 20px;background:#4F46E5;color:#fff;text-align:center;' +
+      'font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:13px;' +
+      'font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.3);';
+    banner.textContent = 'ScreenSnap was updated. Please refresh this page to continue using it.';
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '✕';
+    closeBtn.style.cssText =
+      'background:none;border:none;color:#fff;font-size:16px;cursor:pointer;' +
+      'margin-left:16px;padding:0 4px;';
+    closeBtn.addEventListener('click', () => banner.remove());
+    banner.appendChild(closeBtn);
+    document.body.appendChild(banner);
+  }
+
   // ── Message Listener ──────────────────────────────
 
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (!isContextValid()) return false;
+
     if (!message || typeof message.action !== 'string') {
       sendResponse({ success: false, error: 'Invalid message' });
       return false;
@@ -171,7 +241,7 @@
     removeSelectionOverlay();
 
     try {
-      const response = await chrome.runtime.sendMessage({ action: 'capture-visible' });
+      const response = await safeSendMessage({ action: 'capture-visible' });
 
       if (!response?.success || !response.dataUrl) {
         console.error(LOG_PREFIX, 'Failed to capture visible area');
@@ -186,7 +256,7 @@
         rect.height
       );
 
-      await chrome.runtime.sendMessage({
+      await safeSendMessage({
         action: 'selection-data',
         dataUrl: croppedDataUrl,
         filename: `ScreenSnap_Selection_${getTimestamp()}.png`,
@@ -265,7 +335,7 @@
         // Wait for scroll settle and re-paint
         await delay(SCROLL_CAPTURE_DELAY_MS);
 
-        const response = await chrome.runtime.sendMessage({ action: 'capture-visible' });
+        const response = await safeSendMessage({ action: 'capture-visible' });
 
         if (response?.success && response.dataUrl) {
           captures.push({
@@ -282,7 +352,7 @@
       window.scrollTo(0, originalScrollY);
       document.documentElement.style.overflow = originalOverflow;
 
-      await chrome.runtime.sendMessage({
+      await safeSendMessage({
         action: 'full-page-data',
         dataUrl: stitchedDataUrl,
         filename: `ScreenSnap_FullPage_${getTimestamp()}.png`,

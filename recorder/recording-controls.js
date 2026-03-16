@@ -3,7 +3,7 @@
  * @description Floating draggable widget injected into the active tab during recording.
  * Shows timer, pause/resume, mute, and stop controls. Communicates with the
  * background service worker via chrome.runtime.sendMessage.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 (function () {
@@ -109,7 +109,7 @@
       recDot.classList.add('paused');
       pauseStartTime = Date.now();
       clearInterval(timerInterval);
-      chrome.runtime.sendMessage({ action: 'widget-pause' });
+      safeSend({ action: 'widget-pause' });
     } else {
       pausedDuration += Date.now() - pauseStartTime;
       pauseBtn.textContent = '\u23F8\uFE0F';
@@ -117,7 +117,7 @@
       pauseBtn.setAttribute('aria-label', 'Pause recording');
       recDot.classList.remove('paused');
       timerInterval = setInterval(updateTimer, 1000);
-      chrome.runtime.sendMessage({ action: 'widget-resume' });
+      safeSend({ action: 'widget-resume' });
     }
   });
 
@@ -129,14 +129,29 @@
     muteBtn.textContent = isMuted ? '\uD83D\uDD07' : '\uD83C\uDFA4';
     muteBtn.title = isMuted ? 'Unmute mic' : 'Mute mic';
     muteBtn.setAttribute('aria-label', isMuted ? 'Unmute microphone' : 'Mute microphone');
-    chrome.runtime.sendMessage({ action: 'widget-mute', muted: isMuted });
+    safeSend({ action: 'widget-mute', muted: isMuted });
   });
 
   // ── Stop ────────────────────────────────────────
 
+  /**
+   * Safely send a message, handling context invalidation.
+   * @param {Object} msg - Message to send
+   */
+  function safeSend(msg) {
+    try {
+      chrome.runtime.sendMessage(msg);
+    } catch (err) {
+      if (err.message?.includes('Extension context invalidated')) {
+        console.warn('[ScreenSnap][Widget] Extension updated — removing widget');
+        removeWidget();
+      }
+    }
+  }
+
   stopBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    chrome.runtime.sendMessage({ action: 'widget-stop' });
+    safeSend({ action: 'widget-stop' });
     removeWidget();
   });
 

@@ -1,8 +1,8 @@
 /**
- * @file ScreenSnap — Popup Script v0.4.1
+ * @file ScreenSnap — Popup Script v0.5.0
  * @description Handles button clicks, recording indicator, last capture preview,
  * and settings integration for the extension popup.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 (() => {

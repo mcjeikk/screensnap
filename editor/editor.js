@@ -1,9 +1,9 @@
 /**
- * @file ScreenSnap — Editor v0.4.1
+ * @file ScreenSnap — Editor v0.5.0
  * @description Full annotation editor with canvas-based drawing tools, PDF export,
  * undo/redo, crop, and history integration. All vanilla JS + Canvas API.
  * Includes proper canvas cleanup, Object URL revocation, and accessible UI.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 (() => {

@@ -2,7 +2,7 @@
  * @file ScreenSnap — Storage Utility
  * @description Wrapper around chrome.storage with error handling, defaults, and typed accessors.
  * Centralizes all storage operations for the extension.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 import { STORAGE_KEYS, DEFAULT_SETTINGS } from './constants.js';

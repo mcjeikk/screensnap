@@ -3,7 +3,7 @@
  * @description Handles clipboard operations that require DOM access.
  * MV3 service workers cannot access the clipboard API directly,
  * so this offscreen document acts as a proxy for clipboard writes.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {

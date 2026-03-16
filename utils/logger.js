@@ -2,7 +2,7 @@
  * @file ScreenSnap — Logger Utility
  * @description Provides a structured logging system with levels and module prefixes.
  * Debug mode can be activated via storage setting.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 import { EXTENSION_NAME } from './constants.js';

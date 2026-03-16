@@ -1,8 +1,8 @@
 /**
- * @file ScreenSnap — Settings Page v0.4.1
+ * @file ScreenSnap — Settings Page v0.5.0
  * @description Persists all user settings in chrome.storage.sync for cross-device sync.
  * Uses a field map pattern for clean, maintainable settings binding.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 (() => {

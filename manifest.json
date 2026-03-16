@@ -2,7 +2,8 @@
   "manifest_version": 3,
   "name": "ScreenSnap",
   "description": "Free screenshot & screen recording tool. Capture, annotate, and record — no limits, no account, 100% local.",
-  "version": "0.4.2",
+  "version": "0.5.0",
+  "minimum_chrome_version": "116",
   "icons": {
     "16": "assets/icons/icon-16.png",
     "32": "assets/icons/icon-32.png",
@@ -21,6 +22,7 @@
   },
   "permissions": [
     "activeTab",
+    "alarms",
     "tabCapture",
     "desktopCapture",
     "downloads",

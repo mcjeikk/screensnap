@@ -4,6 +4,38 @@ All notable changes to ScreenSnap will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
+## [0.5.0] - 2026-03-16
+
+### Added
+- **Service Worker Lifecycle**: `chrome.runtime.onStartup` handler recovers stale recording state after browser restart
+- **Service Worker Lifecycle**: `chrome.runtime.onSuspend` handler logs suspension events for debugging
+- **Keepalive**: `chrome.alarms`-based keepalive during active recording to prevent service worker termination
+- **Offscreen Cleanup**: Offscreen document is now closed after clipboard copy to free resources
+- **Error Recovery**: Content script detects "Extension context invalidated" and shows refresh banner
+- **Error Recovery**: Content script retries failed `sendMessage` calls once (handles SW restart)
+- **Error Recovery**: Recording controls widget safely handles context invalidation
+- **Manifest**: Added `minimum_chrome_version: "116"` for API compatibility
+- **Manifest**: Added `alarms` permission for recording keepalive
+- **Testing Guide**: `tests/README.md` with manual testing checklist, Puppeteer/Playwright setup, and CI config
+- **CWS Publishing**: `store/description.txt` — full Chrome Web Store description
+- **CWS Publishing**: `store/short-description.txt` — 132-char summary
+- **CWS Publishing**: `store/privacy-policy.md` — complete privacy policy
+- **CWS Publishing**: `store/PUBLISHING.md` — step-by-step CWS publishing guide
+- **Documentation**: `docs/CROSS_BROWSER.md` — Firefox/Edge porting analysis and effort estimates
+- **Documentation**: `docs/AUDIT_RESULTS.md` — 83-item audit checklist results (84% passing)
+
+### Changed
+- **Preview**: Replaced `beforeunload` with `pagehide` for better bfcache compatibility
+- **Content Script**: All outgoing `chrome.runtime.sendMessage` calls now use `safeSendMessage` with retry logic
+- **Recording Widget**: Message sends wrapped in `safeSend` with context invalidation handling
+- **Version**: Bumped all file headers and UI references to v0.5.0
+
+### Fixed
+- Service worker could be terminated during active recording (now kept alive via alarms)
+- Offscreen document leaked after clipboard copy (now properly closed)
+- Content script crashed silently after extension update (now shows refresh banner)
+- Stale recording badge/state persisted after browser restart (now cleaned up on startup)
+
 ## [0.4.2] - 2026-03-16
 
 ### Changed

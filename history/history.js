@@ -1,8 +1,8 @@
 /**
- * @file ScreenSnap — History Page v0.4.1
+ * @file ScreenSnap — History Page v0.5.0
  * @description Displays all captured screenshots and recordings with filtering, search,
  * sorting, and pagination. Uses safe DOM construction (no innerHTML for user data).
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 (() => {

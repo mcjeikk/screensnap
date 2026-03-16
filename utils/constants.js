@@ -2,7 +2,7 @@
  * @file ScreenSnap — Shared Constants
  * @description Single source of truth for all constants used across the extension.
  * Import this module wherever you need message types, storage keys, or configuration values.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 // ── Message Types ───────────────────────────────────

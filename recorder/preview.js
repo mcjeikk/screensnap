@@ -1,9 +1,9 @@
 /**
- * @file ScreenSnap — Preview Script v0.4.1
+ * @file ScreenSnap — Preview Script v0.5.0
  * @description Loads recorded video from chrome.storage, provides playback preview,
  * and offers download in WebM or MP4 (via ffmpeg.wasm lazy-loaded from CDN).
  * Properly revokes Object URLs on cleanup.
- * @version 0.4.1
+ * @version 0.5.0
  */
 
 (() => {
@@ -276,6 +276,6 @@
     videoBlob = null;
   }
 
-  // Cleanup on page unload
-  window.addEventListener('beforeunload', cleanup);
+  // Cleanup on page hide (pagehide is preferred over beforeunload for bfcache compatibility)
+  window.addEventListener('pagehide', cleanup);
 })();

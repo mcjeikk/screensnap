@@ -1,0 +1,138 @@
+ScreenSnap — Free Screenshot & Screen Recording Tool
+
+Capture, annotate, and record your screen with zero limitations. No account required, no time limits, and 100% local — your data never leaves your browser.
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+📸 SCREENSHOT TOOLS
+
+• Visible Area Capture — Instantly capture what's visible in your browser tab with one click or keyboard shortcut (Alt+Shift+V).
+
+• Full Page Capture — Automatically scrolls through long pages and stitches the captures into one seamless tall image. Perfect for capturing entire articles, documentation, or design mockups.
+
+• Selection Capture — Click and drag to capture any specific area on the page. A crosshair overlay with instructions guides you through the selection process (Alt+Shift+S).
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+✏️ BUILT-IN ANNOTATION EDITOR
+
+Every screenshot opens in a powerful built-in editor with 9 professional annotation tools:
+
+• Arrow — Draw arrows to point at specific elements
+• Rectangle — Outline areas with rounded-corner rectangles
+• Ellipse — Circle important content
+• Line — Draw straight lines
+• Freehand Pen — Sketch freely with a smooth pen tool
+• Text — Click anywhere to add text annotations with customizable size
+• Blur / Pixelate — Obscure sensitive information (emails, passwords, personal data)
+• Highlight — Draw semi-transparent yellow markers over text
+• Crop — Select an area and trim your screenshot
+
+Additional editor features:
+• Color picker — Choose any annotation color
+• Stroke width — Thin, Medium, or Thick
+• Undo / Redo — Full history stack (Ctrl+Z / Ctrl+Shift+Z)
+• Keyboard shortcuts — Every tool has a single-key shortcut (A, R, E, L, P, T, B, H, C)
+• Export formats — Save as PNG, JPG, or PDF
+• Copy to clipboard — Paste directly into emails, docs, or chat apps
+• Real-time status bar — Shows dimensions and estimated file size
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎥 SCREEN RECORDING
+
+Record your screen with no time limits, no watermarks, and no sign-up:
+
+• Tab Recording — Record the current browser tab with audio
+• Screen / Window Recording — Record your entire screen or a specific window
+• Camera Recording — Record from your webcam only
+
+Recording features:
+• Picture-in-Picture (PiP) webcam overlay — Show your face in a circular bubble while recording your screen, with configurable position (4 corners) and size (small/medium/large)
+• Audio controls — Capture system/tab audio, microphone, or both
+• Live audio level meter — See your mic input level before recording
+• Mute / Unmute — Toggle microphone during recording
+• Pause / Resume — Pause and resume without splitting the recording
+• Countdown timer — Optional 3-2-1 countdown before recording starts
+• Resolution options — 720p, 1080p, or 4K
+• Floating controls widget — A draggable overlay with timer, pause, mute, and stop buttons appears on your page during recording
+
+Recording export:
+• WebM — Native format, instant download
+• MP4 — Convert to MP4 using ffmpeg.wasm (runs entirely in your browser, loaded only when needed)
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+📁 CAPTURE HISTORY
+
+All your captures are saved locally with thumbnails:
+• Grid view with image previews
+• Filter by type (Screenshots / Recordings)
+• Search by filename
+• Sort by date, size, or name
+• Click to re-open in editor
+• Delete individual items or clear all
+• Configurable history limit (50, 100, or 200 items)
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚙️ CUSTOMIZABLE SETTINGS
+
+• Screenshot format — PNG or JPG (with quality slider)
+• After-capture action — Open in editor, save directly, or copy to clipboard
+• Recording defaults — Resolution, audio, PiP, countdown, format
+• Theme — Dark, Light, or System (auto-detect)
+• Notifications — Toggle capture notifications on/off
+• History — Enable/disable history, set max items
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+⌨️ KEYBOARD SHORTCUTS
+
+• Alt+Shift+V — Capture visible area
+• Alt+Shift+F — Capture full page
+• Alt+Shift+S — Capture selection
+• Customizable in chrome://extensions/shortcuts
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎨 BEAUTIFUL THEMES
+
+Choose between Dark Mode, Light Mode, or System Auto-detect. The theme applies consistently across every page — popup, editor, recorder, history, and settings.
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔒 PRIVACY FIRST
+
+ScreenSnap is 100% local:
+• No accounts or sign-ups
+• No data collection or tracking
+• No analytics
+• No external servers
+• All captures stay on your device
+• All processing happens in your browser
+• Open source
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+🆓 TRULY FREE
+
+No premium tiers, no watermarks, no time limits, no ads. Every feature is available to everyone.
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+PERMISSIONS EXPLAINED
+
+• activeTab — Access the current tab to capture its content
+• tabCapture — Capture tab video/audio for recording
+• desktopCapture — Capture full screen or window for recording
+• downloads — Save captures and recordings to your Downloads folder
+• storage — Store your preferences and capture history locally
+• offscreen — Clipboard operations (copy screenshot to clipboard)
+• scripting — Inject capture overlay when you initiate area selection
+• notifications — Show capture completion notifications
+• alarms — Keep background processes alive during recording
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+Built with Manifest V3. No remote code. No bundled trackers. Just a clean, fast, privacy-respecting tool that does exactly what it says.
