@@ -17,6 +17,19 @@ document.addEventListener('DOMContentLoaded', () => {
     captureAction('capture-selection');
   });
 
+  // Record buttons — open recorder page with source pre-selected
+  document.getElementById('btn-record-tab').addEventListener('click', () => {
+    openRecorder('tab');
+  });
+
+  document.getElementById('btn-record-screen').addEventListener('click', () => {
+    openRecorder('screen');
+  });
+
+  document.getElementById('btn-record-cam').addEventListener('click', () => {
+    openRecorder('camera');
+  });
+
   // Footer buttons
   document.getElementById('btn-history').addEventListener('click', () => {
     chrome.tabs.create({ url: chrome.runtime.getURL('editor/history.html') });
@@ -30,23 +43,28 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
+ * Open the recorder configuration page with the given source.
+ */
+function openRecorder(source) {
+  const url = chrome.runtime.getURL(`recorder/recorder.html?source=${source}`);
+  chrome.tabs.create({ url });
+  window.close();
+}
+
+/**
  * Send capture action to background and handle response.
  */
 async function captureAction(action) {
   try {
-    // For selection and full page, we need to close popup first
-    // because popup blocks content script interaction
     if (action === 'capture-selection' || action === 'capture-full-page') {
       await chrome.runtime.sendMessage({ action });
       window.close();
       return;
     }
 
-    // For visible capture, get result directly
     const response = await chrome.runtime.sendMessage({ action });
 
     if (response?.success && response.dataUrl) {
-      // Store capture and open editor
       await chrome.storage.local.set({ pendingCapture: response.dataUrl });
       await chrome.tabs.create({
         url: chrome.runtime.getURL('editor/editor.html'),
@@ -64,7 +82,6 @@ async function captureAction(action) {
  * Show error feedback in the popup.
  */
 function showError(message) {
-  // Brief visual feedback
   const container = document.querySelector('.container');
   const errorEl = document.createElement('div');
   errorEl.className = 'error-toast';

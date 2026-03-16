@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScreenSnap — Record</title>
+  <link rel="stylesheet" href="recorder.css">
+</head>
+<body>
+  <div class="recorder-app">
+    <!-- Config Panel -->
+    <div id="config-panel" class="panel">
+      <header class="panel-header">
+        <img src="../assets/icons/icon-32.png" alt="ScreenSnap" class="logo">
+        <h1>ScreenSnap Recorder</h1>
+      </header>
+
+      <div class="config-grid">
+        <!-- Source Selection -->
+        <section class="config-section">
+          <h2>📹 Source</h2>
+          <div class="source-buttons">
+            <button class="source-btn active" data-source="tab">
+              <span class="source-icon">📑</span>
+              <span>Current Tab</span>
+            </button>
+            <button class="source-btn" data-source="screen">
+              <span class="source-icon">🖥️</span>
+              <span>Screen / Window</span>
+            </button>
+            <button class="source-btn" data-source="camera">
+              <span class="source-icon">📷</span>
+              <span>Camera Only</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Audio Options -->
+        <section class="config-section">
+          <h2>🎤 Audio</h2>
+          <label class="toggle-row">
+            <span>Microphone</span>
+            <input type="checkbox" id="opt-mic" checked>
+            <span class="toggle-slider"></span>
+          </label>
+          <label class="toggle-row" id="system-audio-row">
+            <span>System / Tab Audio</span>
+            <input type="checkbox" id="opt-system-audio" checked>
+            <span class="toggle-slider"></span>
+          </label>
+          <!-- Audio level meter -->
+          <div id="audio-meter-container" class="audio-meter-container" style="display:none;">
+            <label>🎙️ Mic Level</label>
+            <div class="audio-meter">
+              <div id="audio-meter-bar" class="audio-meter-bar"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Webcam PiP -->
+        <section class="config-section" id="pip-section">
+          <h2>🎥 Webcam Overlay (PiP)</h2>
+          <label class="toggle-row">
+            <span>Enable webcam bubble</span>
+            <input type="checkbox" id="opt-pip">
+            <span class="toggle-slider"></span>
+          </label>
+          <div id="pip-options" class="sub-options" style="display:none;">
+            <div class="option-row">
+              <label>Position</label>
+              <select id="pip-position">
+                <option value="bottom-right">Bottom Right</option>
+                <option value="bottom-left">Bottom Left</option>
+                <option value="top-right">Top Right</option>
+                <option value="top-left">Top Left</option>
+              </select>
+            </div>
+            <div class="option-row">
+              <label>Size</label>
+              <select id="pip-size">
+                <option value="small">Small</option>
+                <option value="medium" selected>Medium</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- Quality -->
+        <section class="config-section">
+          <h2>⚙️ Quality</h2>
+          <div class="option-row">
+            <label>Resolution</label>
+            <select id="opt-resolution">
+              <option value="720">720p</option>
+              <option value="1080" selected>1080p</option>
+              <option value="2160">4K</option>
+            </select>
+          </div>
+          <label class="toggle-row">
+            <span>Countdown (3, 2, 1…)</span>
+            <input type="checkbox" id="opt-countdown" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </section>
+      </div>
+
+      <!-- Camera Preview (camera source only) -->
+      <div id="camera-preview-container" class="camera-preview-container" style="display:none;">
+        <h2>📷 Camera Preview</h2>
+        <video id="camera-preview" autoplay muted playsinline></video>
+      </div>
+
+      <!-- Start Button -->
+      <button id="btn-start" class="btn-start">
+        <span class="rec-dot"></span>
+        Start Recording
+      </button>
+
+      <div id="error-msg" class="error-msg" style="display:none;"></div>
+    </div>
+
+    <!-- Countdown Overlay -->
+    <div id="countdown-overlay" class="countdown-overlay" style="display:none;">
+      <span id="countdown-number" class="countdown-number">3</span>
+    </div>
+
+    <!-- Recording State (hidden — recording happens in background via this page) -->
+    <div id="recording-panel" class="panel" style="display:none;">
+      <div class="recording-status">
+        <span class="rec-indicator"></span>
+        <span id="rec-timer">00:00</span>
+        <span id="rec-source-label"></span>
+      </div>
+      <div class="recording-controls">
+        <button id="btn-pause" class="ctrl-btn" title="Pause">⏸️ Pause</button>
+        <button id="btn-mute" class="ctrl-btn" title="Mute mic">🎤 Mute</button>
+        <button id="btn-stop" class="ctrl-btn btn-stop-rec" title="Stop">⏹️ Stop</button>
+      </div>
+      <!-- Canvas for PiP compositing (hidden) -->
+      <canvas id="pip-canvas" style="display:none;"></canvas>
+      <video id="pip-webcam" autoplay muted playsinline style="display:none;"></video>
+      <video id="pip-screen" autoplay muted playsinline style="display:none;"></video>
+    </div>
+  </div>
+
+  <script src="recorder.js"></script>
+</body>
+</html>

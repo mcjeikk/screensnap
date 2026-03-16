@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScreenSnap — Recording Preview</title>
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+  <div class="preview-app">
+    <header class="preview-header">
+      <img src="../assets/icons/icon-32.png" alt="ScreenSnap" class="logo">
+      <h1>Recording Preview</h1>
+    </header>
+
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Loading recording…</p>
+    </div>
+
+    <div id="preview-content" class="preview-content" style="display:none;">
+      <div class="video-container">
+        <video id="preview-video" controls playsinline></video>
+      </div>
+
+      <div class="metadata">
+        <div class="meta-item">
+          <span class="meta-label">Duration</span>
+          <span id="meta-duration" class="meta-value">--:--</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Size</span>
+          <span id="meta-size" class="meta-value">-- MB</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Format</span>
+          <span id="meta-format" class="meta-value">WebM</span>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button id="btn-download-webm" class="btn btn-primary">
+          ⬇️ Download WebM
+        </button>
+        <button id="btn-download-mp4" class="btn btn-secondary">
+          ⬇️ Download MP4
+        </button>
+        <button id="btn-discard" class="btn btn-ghost">
+          🗑️ Discard
+        </button>
+      </div>
+
+      <div id="mp4-progress" class="mp4-progress" style="display:none;">
+        <div class="progress-bar">
+          <div id="mp4-progress-bar" class="progress-fill"></div>
+        </div>
+        <p id="mp4-status">Loading ffmpeg.wasm…</p>
+      </div>
+    </div>
+
+    <div id="error-container" class="error-container" style="display:none;">
+      <p id="error-msg">Something went wrong.</p>
+    </div>
+  </div>
+
+  <script src="preview.js"></script>
+</body>
+</html>

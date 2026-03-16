@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ScreenSnap",
   "description": "Free screenshot & screen recording tool. Capture, annotate, and record — no limits, no account, 100% local.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "icons": {
     "16": "assets/icons/icon-16.png",
     "32": "assets/icons/icon-32.png",
@@ -25,7 +25,8 @@
     "desktopCapture",
     "downloads",
     "storage",
-    "offscreen"
+    "offscreen",
+    "scripting"
   ],
   "host_permissions": ["<all_urls>"],
   "commands": {
@@ -54,6 +55,12 @@
       "js": ["content/content-script.js"],
       "css": ["content/content-style.css"],
       "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["recorder/recording-controls.css"],
+      "matches": ["<all_urls>"]
     }
   ]
 }

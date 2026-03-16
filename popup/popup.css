@@ -135,6 +135,18 @@ body {
   font-weight: 600;
 }
 
+/* Record buttons */
+.btn-record {
+  border-color: #EF4444;
+  color: var(--text);
+}
+
+.btn-record:hover:not(:disabled) {
+  background: #EF4444;
+  color: white;
+  border-color: #EF4444;
+}
+
 /* Footer */
 .footer {
   display: flex;
