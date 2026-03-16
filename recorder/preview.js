@@ -95,17 +95,10 @@ async function loadRecording() {
   }
 
   document.getElementById('meta-size').textContent = formatFileSize(videoBlob.size);
-  const isMP4 = videoMimeType.includes('mp4');
-  const formatLabel = isMP4 ? 'MP4' : videoMimeType.includes('webm') ? 'WebM' : videoMimeType;
+  const formatLabel = videoMimeType.includes('mp4') ? 'MP4'
+    : videoMimeType.includes('webm') ? 'WebM'
+    : videoMimeType;
   document.getElementById('meta-format').textContent = formatLabel;
-
-  // Show the right download button based on format
-  const webmBtn = document.getElementById('btn-download-webm');
-  const mp4Btn = document.getElementById('btn-download-mp4');
-  if (isMP4) {
-    webmBtn.style.display = 'none';
-    mp4Btn.textContent = '\uD83D\uDCE5 Download MP4';
-  }
 
   // Show content, hide loading
   document.getElementById('loading').style.display = 'none';
@@ -131,43 +124,17 @@ async function cleanupStorage(chunkCount) {
 
 /** Bind download and discard buttons. */
 function bindButtons() {
-  document.getElementById('btn-download-webm').addEventListener('click', downloadWebM);
-  document.getElementById('btn-download-mp4').addEventListener('click', downloadMP4);
+  document.getElementById('btn-download').addEventListener('click', downloadRecording);
   document.getElementById('btn-discard').addEventListener('click', discard);
 }
 
-/** Download the recording as WebM (native format, instant). */
-function downloadWebM() {
+/** Download the recording in its native format. */
+function downloadRecording() {
   if (!videoBlob) return;
+  const ext = videoBlob.type.includes('mp4') ? 'mp4' : 'webm';
   const url = URL.createObjectURL(videoBlob);
-  const filename = `ScreenBolt_${getTimestamp()}.webm`;
-  triggerDownload(url, filename);
-  // Revoke after a delay to ensure download starts
+  triggerDownload(url, `ScreenBolt_${getTimestamp()}.${ext}`);
   setTimeout(() => URL.revokeObjectURL(url), 5000);
-}
-
-/**
- * Download as MP4 using ffmpeg.wasm (bundled locally, core loaded on-demand).
- * Shows progress bar during conversion.
- */
-/**
- * Download as MP4.
- * Chrome 130+ records natively in MP4 — no conversion needed.
- * If the recording is already MP4, downloads directly.
- * If WebM (older Chrome), shows a message.
- */
-function downloadMP4() {
-  if (!videoBlob) return;
-
-  if (videoBlob.type.includes('mp4')) {
-    // Already MP4 — direct download
-    const url = URL.createObjectURL(videoBlob);
-    triggerDownload(url, `ScreenBolt_${getTimestamp()}.mp4`);
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
-  } else {
-    // WebM fallback — can't convert without ffmpeg
-    alert('This recording is in WebM format. Use "Download WebM" instead.\n\nMP4 recording requires Chrome 130+. Please update your browser for native MP4 support.');
-  }
 }
 
 /** Discard the recording and close the tab. */
