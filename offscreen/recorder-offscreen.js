@@ -340,11 +340,16 @@
    * @param {MediaStream} stream - Combined stream to record
    */
   function startMediaRecorder(stream) {
-    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
-      ? 'video/webm;codecs=vp9,opus'
-      : MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
-        ? 'video/webm;codecs=vp8,opus'
-        : 'video/webm';
+    // Prefer MP4 (Chrome 130+), fallback to WebM
+    const mimeType = MediaRecorder.isTypeSupported('video/mp4;codecs=avc1.42E01E,mp4a.40.2')
+      ? 'video/mp4;codecs=avc1.42E01E,mp4a.40.2'
+      : MediaRecorder.isTypeSupported('video/mp4;codecs=avc1.42E01E,opus')
+        ? 'video/mp4;codecs=avc1.42E01E,opus'
+        : MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+          ? 'video/webm;codecs=vp9,opus'
+          : MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
+            ? 'video/webm;codecs=vp8,opus'
+            : 'video/webm';
 
     mediaRecorder = new MediaRecorder(stream, {
       mimeType,

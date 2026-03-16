@@ -95,7 +95,17 @@ async function loadRecording() {
   }
 
   document.getElementById('meta-size').textContent = formatFileSize(videoBlob.size);
-  document.getElementById('meta-format').textContent = videoMimeType.includes('webm') ? 'WebM' : videoMimeType;
+  const isMP4 = videoMimeType.includes('mp4');
+  const formatLabel = isMP4 ? 'MP4' : videoMimeType.includes('webm') ? 'WebM' : videoMimeType;
+  document.getElementById('meta-format').textContent = formatLabel;
+
+  // Show the right download button based on format
+  const webmBtn = document.getElementById('btn-download-webm');
+  const mp4Btn = document.getElementById('btn-download-mp4');
+  if (isMP4) {
+    webmBtn.style.display = 'none';
+    mp4Btn.textContent = '\uD83D\uDCE5 Download MP4';
+  }
 
   // Show content, hide loading
   document.getElementById('loading').style.display = 'none';
@@ -141,90 +151,22 @@ function downloadWebM() {
  * Shows progress bar during conversion.
  */
 /**
- * Download as MP4 using ffmpeg.wasm (fully bundled locally).
- * All files are served from the extension itself — no CDN, no sandbox.
- * CSP: 'wasm-unsafe-eval' allows WASM compilation.
- * UMD globals: FFmpegWASM.FFmpeg, FFmpegUtil.toBlobURL/fetchFile
+ * Download as MP4.
+ * Chrome 130+ records natively in MP4 — no conversion needed.
+ * If the recording is already MP4, downloads directly.
+ * If WebM (older Chrome), shows a message.
  */
-async function downloadMP4() {
+function downloadMP4() {
   if (!videoBlob) return;
 
-  const progressContainer = document.getElementById('mp4-progress');
-  const progressBar = document.getElementById('mp4-progress-bar');
-  const statusText = document.getElementById('mp4-status');
-  const btn = document.getElementById('btn-download-mp4');
-
-  btn.disabled = true;
-  progressContainer.style.display = 'block';
-  statusText.textContent = 'Initializing ffmpeg\u2026';
-  progressBar.style.width = '10%';
-
-  try {
-    const { FFmpeg } = FFmpegWASM;
-    const { fetchFile } = FFmpegUtil;
-
-    const ffmpeg = new FFmpeg();
-
-    ffmpeg.on('progress', ({ progress }) => {
-      // ffmpeg.wasm can report negative or >1 values; clamp to 0-100
-      const clamped = Math.max(0, Math.min(1, progress));
-      const pct = Math.min(95, 30 + clamped * 65);
-      progressBar.style.width = `${pct}%`;
-      statusText.textContent = `Converting\u2026 ${Math.round(clamped * 100)}%`;
-    });
-
-    progressBar.style.width = '20%';
-    statusText.textContent = 'Loading ffmpeg core\u2026';
-
-    // All files are local — no CDN needed
-    // The UMD ffmpeg.js auto-detects publicPath from its own script src,
-    // so 814.ffmpeg.js (Worker) loads from the same directory.
-    // coreURL + wasmURL point to local bundled files.
-    await ffmpeg.load({
-      coreURL: chrome.runtime.getURL('lib/ffmpeg/ffmpeg-core.js'),
-      wasmURL: chrome.runtime.getURL('lib/ffmpeg/ffmpeg-core.wasm'),
-    });
-
-    progressBar.style.width = '30%';
-    statusText.textContent = 'Converting to MP4\u2026';
-
-    const inputData = await fetchFile(videoBlob);
-    await ffmpeg.writeFile('input.webm', inputData);
-    await ffmpeg.exec([
-      '-i', 'input.webm',
-      '-c:v', 'libx264',
-      '-preset', 'fast',
-      '-crf', '23',
-      '-c:a', 'aac',
-      '-b:a', '128k',
-      'output.mp4'
-    ]);
-
-    const data = await ffmpeg.readFile('output.mp4');
-    const mp4Blob = new Blob([data.buffer], { type: 'video/mp4' });
-
-    progressBar.style.width = '100%';
-    statusText.textContent = 'Done! Downloading\u2026';
-
-    const url = URL.createObjectURL(mp4Blob);
+  if (videoBlob.type.includes('mp4')) {
+    // Already MP4 — direct download
+    const url = URL.createObjectURL(videoBlob);
     triggerDownload(url, `ScreenBolt_${getTimestamp()}.mp4`);
     setTimeout(() => URL.revokeObjectURL(url), 5000);
-
-    // Cleanup
-    await ffmpeg.deleteFile('input.webm');
-    await ffmpeg.deleteFile('output.mp4');
-    ffmpeg.terminate();
-
-    setTimeout(() => {
-      progressContainer.style.display = 'none';
-      btn.disabled = false;
-    }, 2000);
-
-  } catch (err) {
-    console.error(LOG_PREFIX, 'MP4 conversion failed:', err);
-    statusText.textContent = `\u274C ${err.message}`;
-    progressBar.style.width = '0%';
-    btn.disabled = false;
+  } else {
+    // WebM fallback — can't convert without ffmpeg
+    alert('This recording is in WebM format. Use "Download WebM" instead.\n\nMP4 recording requires Chrome 130+. Please update your browser for native MP4 support.');
   }
 }
 

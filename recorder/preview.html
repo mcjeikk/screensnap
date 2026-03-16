@@ -52,12 +52,7 @@
         </button>
       </div>
 
-      <div id="mp4-progress" class="mp4-progress" style="display:none;">
-        <div class="progress-bar">
-          <div id="mp4-progress-bar" class="progress-fill"></div>
-        </div>
-        <p id="mp4-status">Loading ffmpeg.wasm…</p>
-      </div>
+      <!-- MP4 progress bar removed — Chrome 130+ records natively as MP4 -->
     </div>
 
     <div id="error-container" class="error-container" style="display:none;">
@@ -65,9 +60,6 @@
     </div>
   </div>
 
-  <!-- ffmpeg.wasm UMD (bundled locally, ~120KB JS + 32MB WASM) -->
-  <script src="../lib/ffmpeg/ffmpeg.js"></script>
-  <script src="../lib/ffmpeg/ffmpeg-util.js"></script>
   <script src="preview.js"></script>
 </body>
 </html>
