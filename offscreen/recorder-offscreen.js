@@ -159,6 +159,21 @@
     }
 
     combinedStream = buildCombinedStream(mainStream, micStream, webcamStream, config);
+
+    // Play back tab audio to the user — chrome.tabCapture mutes the tab
+    if (config.source === 'tab' && mainStream) {
+      try {
+        const audioCtx = new AudioContext();
+        const source = audioCtx.createMediaStreamSource(mainStream);
+        source.connect(audioCtx.destination);
+        // Store reference for cleanup
+        mainStream._audioPlayback = { ctx: audioCtx, source };
+        console.info(LOG_PREFIX, 'Tab audio playback enabled (unmuted for user)');
+      } catch (err) {
+        console.warn(LOG_PREFIX, 'Could not enable audio playback:', err.message);
+      }
+    }
+
     startMediaRecorder(combinedStream);
     recordingStartTime = Date.now();
     pausedDuration = 0;
@@ -485,6 +500,12 @@
     if (pipAnimFrame) {
       cancelAnimationFrame(pipAnimFrame);
       pipAnimFrame = null;
+    }
+
+    // Close tab audio playback if active
+    if (mainStream?._audioPlayback) {
+      mainStream._audioPlayback.source.disconnect();
+      mainStream._audioPlayback.ctx.close().catch(() => {});
     }
 
     [mainStream, micStream, webcamStream, combinedStream].forEach(stream => {
