@@ -1,62 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ScreenBolt — Recording Preview</title>
-  <link rel="stylesheet" href="../assets/styles/themes.css">
-  <link rel="stylesheet" href="preview.css">
-  <script src="../assets/scripts/theme-init.js"></script>
-</head>
-<body>
-  <div class="preview-app">
-    <header class="preview-header">
-      <img src="../assets/icons/icon-32.png" alt="ScreenBolt" class="logo">
-      <h1>Recording Preview</h1>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScreenBolt — Recording Preview</title>
+    <link rel="stylesheet" href="../assets/styles/themes.css" />
+    <link rel="stylesheet" href="preview.css" />
+    <script src="../assets/scripts/theme-init.js"></script>
+  </head>
+  <body>
+    <div class="preview-app">
+      <header class="preview-header">
+        <img src="../assets/icons/icon-32.png" alt="ScreenBolt" class="logo" />
+        <h1>Recording Preview</h1>
+      </header>
 
-    <div id="loading" class="loading">
-      <div class="spinner"></div>
-      <p>Loading recording…</p>
-    </div>
-
-    <div id="preview-content" class="preview-content" style="display:none;">
-      <div class="video-container">
-        <video id="preview-video" controls playsinline></video>
+      <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Loading recording…</p>
       </div>
 
-      <div class="metadata">
-        <div class="meta-item">
-          <span class="meta-label">Duration</span>
-          <span id="meta-duration" class="meta-value">--:--</span>
+      <div id="preview-content" class="preview-content" style="display: none">
+        <div class="video-container">
+          <video id="preview-video" controls playsinline></video>
         </div>
-        <div class="meta-item">
-          <span class="meta-label">Size</span>
-          <span id="meta-size" class="meta-value">-- MB</span>
+
+        <div class="metadata">
+          <div class="meta-item">
+            <span class="meta-label">Duration</span>
+            <span id="meta-duration" class="meta-value">--:--</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Size</span>
+            <span id="meta-size" class="meta-value">-- MB</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Format</span>
+            <span id="meta-format" class="meta-value">WebM</span>
+          </div>
         </div>
-        <div class="meta-item">
-          <span class="meta-label">Format</span>
-          <span id="meta-format" class="meta-value">WebM</span>
+
+        <div class="action-buttons">
+          <button id="btn-download" class="btn btn-primary">⬇️ Download</button>
+          <button id="btn-discard" class="btn btn-ghost">🗑️ Discard</button>
         </div>
+
+        <!-- MP4 progress bar removed — Chrome 130+ records natively as MP4 -->
       </div>
 
-      <div class="action-buttons">
-        <button id="btn-download" class="btn btn-primary">
-          ⬇️ Download
-        </button>
-        <button id="btn-discard" class="btn btn-ghost">
-          🗑️ Discard
-        </button>
+      <div id="error-container" class="error-container" style="display: none">
+        <p id="error-msg">Something went wrong.</p>
       </div>
-
-      <!-- MP4 progress bar removed — Chrome 130+ records natively as MP4 -->
     </div>
 
-    <div id="error-container" class="error-container" style="display:none;">
-      <p id="error-msg">Something went wrong.</p>
-    </div>
-  </div>
-
-  <script src="preview.js"></script>
-</body>
+    <script type="module" src="preview.js"></script>
+  </body>
 </html>

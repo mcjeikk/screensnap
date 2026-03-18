@@ -1,154 +1,171 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to ScreenBolt</title>
-  <link rel="stylesheet" href="../assets/styles/themes.css">
-  <link rel="stylesheet" href="welcome.css">
-  <script src="../assets/scripts/theme-init.js"></script>
-</head>
-<body>
-  <div class="welcome-app">
-    <!-- Slides -->
-    <div class="slides-container" id="slides-container">
-      <!-- Slide 0: Welcome -->
-      <div class="slide active" data-slide="0">
-        <div class="slide-illustration">
-          <svg viewBox="0 0 200 200" width="180" height="180">
-            <defs>
-              <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#4F46E5"/>
-                <stop offset="100%" stop-color="#22D3EE"/>
-              </linearGradient>
-            </defs>
-            <circle cx="100" cy="100" r="85" fill="none" stroke="url(#g1)" stroke-width="3" opacity="0.3"/>
-            <!-- Camera body -->
-            <rect x="55" y="70" width="90" height="65" rx="12" fill="url(#g1)"/>
-            <!-- Lens -->
-            <circle cx="100" cy="100" r="22" fill="#0F172A" stroke="white" stroke-width="3"/>
-            <circle cx="100" cy="100" r="14" fill="none" stroke="white" stroke-width="1.5" opacity="0.5"/>
-            <!-- Flash -->
-            <rect x="115" y="62" width="20" height="12" rx="4" fill="#22D3EE" opacity="0.8"/>
-            <!-- Snap lightning -->
-            <path d="M155 50 L148 70 L158 68 L150 90" fill="none" stroke="#EAB308" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to ScreenBolt</title>
+    <link rel="stylesheet" href="../assets/styles/themes.css" />
+    <link rel="stylesheet" href="welcome.css" />
+    <script src="../assets/scripts/theme-init.js"></script>
+  </head>
+  <body>
+    <div class="welcome-app">
+      <!-- Slides -->
+      <div class="slides-container" id="slides-container">
+        <!-- Slide 0: Welcome -->
+        <div class="slide active" data-slide="0">
+          <div class="slide-illustration">
+            <svg viewBox="0 0 200 200" width="180" height="180">
+              <defs>
+                <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#4F46E5" />
+                  <stop offset="100%" stop-color="#22D3EE" />
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="100" r="85" fill="none" stroke="url(#g1)" stroke-width="3" opacity="0.3" />
+              <!-- Camera body -->
+              <rect x="55" y="70" width="90" height="65" rx="12" fill="url(#g1)" />
+              <!-- Lens -->
+              <circle cx="100" cy="100" r="22" fill="#0F172A" stroke="white" stroke-width="3" />
+              <circle cx="100" cy="100" r="14" fill="none" stroke="white" stroke-width="1.5" opacity="0.5" />
+              <!-- Flash -->
+              <rect x="115" y="62" width="20" height="12" rx="4" fill="#22D3EE" opacity="0.8" />
+              <!-- Snap lightning -->
+              <path
+                d="M155 50 L148 70 L158 68 L150 90"
+                fill="none"
+                stroke="#EAB308"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <h1>Welcome to <span class="brand">ScreenBolt</span></h1>
+          <p class="subtitle">Free screenshot & recording tool.<br />No limits. No account. 100% local.</p>
         </div>
-        <h1>Welcome to <span class="brand">ScreenBolt</span></h1>
-        <p class="subtitle">Free screenshot & recording tool.<br>No limits. No account. 100% local.</p>
+
+        <!-- Slide 1: Screenshots -->
+        <div class="slide" data-slide="1">
+          <div class="slide-illustration">
+            <svg viewBox="0 0 200 160" width="200" height="160">
+              <!-- Browser window -->
+              <rect x="20" y="10" width="160" height="120" rx="8" fill="#1E293B" stroke="#334155" stroke-width="2" />
+              <circle cx="36" cy="22" r="4" fill="#EF4444" />
+              <circle cx="50" cy="22" r="4" fill="#EAB308" />
+              <circle cx="64" cy="22" r="4" fill="#22C55E" />
+              <rect x="25" y="32" width="150" height="90" rx="2" fill="#0F172A" />
+              <!-- Selection dashed rect -->
+              <rect
+                x="45"
+                y="48"
+                width="80"
+                height="55"
+                rx="3"
+                fill="none"
+                stroke="#4F46E5"
+                stroke-width="2"
+                stroke-dasharray="6 3"
+              />
+              <!-- Crosshair -->
+              <line x1="85" y1="38" x2="85" y2="58" stroke="#4F46E5" stroke-width="1.5" opacity="0.6" />
+              <line x1="75" y1="48" x2="95" y2="48" stroke="#4F46E5" stroke-width="1.5" opacity="0.6" />
+              <!-- Content placeholder -->
+              <rect x="50" y="56" width="70" height="6" rx="2" fill="#334155" />
+              <rect x="50" y="66" width="50" height="6" rx="2" fill="#334155" />
+              <rect x="50" y="76" width="60" height="6" rx="2" fill="#334155" />
+              <!-- Camera emoji -->
+              <text x="160" y="145" font-size="24">📸</text>
+            </svg>
+          </div>
+          <h2>Capture Anything</h2>
+          <p>Visible area, full page, or custom selection. One click or keyboard shortcut.</p>
+          <div class="feature-pills">
+            <span class="pill">Visible Area</span>
+            <span class="pill">Full Page</span>
+            <span class="pill">Selection</span>
+          </div>
+        </div>
+
+        <!-- Slide 2: Annotations -->
+        <div class="slide" data-slide="2">
+          <div class="slide-illustration">
+            <svg viewBox="0 0 200 160" width="200" height="160">
+              <!-- Canvas -->
+              <rect x="20" y="10" width="160" height="130" rx="8" fill="#1E293B" stroke="#334155" stroke-width="2" />
+              <!-- Arrow annotation -->
+              <line x1="45" y1="110" x2="120" y2="40" stroke="#EF4444" stroke-width="3" />
+              <polygon points="120,40 110,45 115,52" fill="#EF4444" />
+              <!-- Rectangle annotation -->
+              <rect x="70" y="55" width="60" height="35" rx="4" fill="none" stroke="#22D3EE" stroke-width="2" />
+              <!-- Text annotation -->
+              <text x="80" y="75" font-size="12" fill="#EAB308" font-weight="bold">Bug!</text>
+              <!-- Highlight -->
+              <rect x="40" y="95" width="80" height="12" rx="2" fill="#EAB308" opacity="0.3" />
+              <!-- Color dots -->
+              <circle cx="155" cy="30" r="6" fill="#EF4444" />
+              <circle cx="155" cy="46" r="6" fill="#22D3EE" />
+              <circle cx="155" cy="62" r="6" fill="#22C55E" />
+            </svg>
+          </div>
+          <h2>Annotate & Edit</h2>
+          <p>Arrows, shapes, text, blur, highlight, crop — everything you need built in.</p>
+          <div class="feature-pills">
+            <span class="pill">9 Tools</span>
+            <span class="pill">Undo/Redo</span>
+            <span class="pill">Export PNG/JPG</span>
+          </div>
+        </div>
+
+        <!-- Slide 3: Recording -->
+        <div class="slide" data-slide="3">
+          <div class="slide-illustration">
+            <svg viewBox="0 0 200 160" width="200" height="160">
+              <!-- Screen -->
+              <rect x="25" y="10" width="150" height="100" rx="8" fill="#1E293B" stroke="#334155" stroke-width="2" />
+              <!-- Play button -->
+              <polygon points="85,45 85,80 115,62.5" fill="#4F46E5" opacity="0.8" />
+              <!-- REC indicator -->
+              <circle cx="50" cy="28" r="5" fill="#EF4444" />
+              <text x="60" y="33" font-size="11" fill="#EF4444" font-weight="bold">REC</text>
+              <!-- Timer -->
+              <text x="130" y="33" font-size="10" fill="#94A3B8" font-family="monospace">02:34</text>
+              <!-- PiP webcam bubble -->
+              <circle cx="150" cy="90" r="18" fill="#0F172A" stroke="#22D3EE" stroke-width="2" />
+              <circle cx="150" cy="86" r="6" fill="#94A3B8" />
+              <ellipse cx="150" cy="98" rx="10" ry="6" fill="#94A3B8" />
+              <!-- Controls bar -->
+              <rect x="55" y="125" width="90" height="24" rx="12" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
+              <circle cx="78" cy="137" r="6" fill="#EF4444" />
+              <rect x="92" y="132" width="12" height="10" rx="2" fill="#94A3B8" />
+              <rect x="112" y="132" width="12" height="10" rx="2" fill="#94A3B8" />
+            </svg>
+          </div>
+          <h2>Record Your Screen</h2>
+          <p>Tab, full screen, or camera — with PiP overlay, audio controls, and no time limit.</p>
+          <div class="feature-pills">
+            <span class="pill">Tab / Screen / Camera</span>
+            <span class="pill">PiP Webcam</span>
+            <span class="pill">WebM & MP4</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Slide 1: Screenshots -->
-      <div class="slide" data-slide="1">
-        <div class="slide-illustration">
-          <svg viewBox="0 0 200 160" width="200" height="160">
-            <!-- Browser window -->
-            <rect x="20" y="10" width="160" height="120" rx="8" fill="#1E293B" stroke="#334155" stroke-width="2"/>
-            <circle cx="36" cy="22" r="4" fill="#EF4444"/>
-            <circle cx="50" cy="22" r="4" fill="#EAB308"/>
-            <circle cx="64" cy="22" r="4" fill="#22C55E"/>
-            <rect x="25" y="32" width="150" height="90" rx="2" fill="#0F172A"/>
-            <!-- Selection dashed rect -->
-            <rect x="45" y="48" width="80" height="55" rx="3" fill="none" stroke="#4F46E5" stroke-width="2" stroke-dasharray="6 3"/>
-            <!-- Crosshair -->
-            <line x1="85" y1="38" x2="85" y2="58" stroke="#4F46E5" stroke-width="1.5" opacity="0.6"/>
-            <line x1="75" y1="48" x2="95" y2="48" stroke="#4F46E5" stroke-width="1.5" opacity="0.6"/>
-            <!-- Content placeholder -->
-            <rect x="50" y="56" width="70" height="6" rx="2" fill="#334155"/>
-            <rect x="50" y="66" width="50" height="6" rx="2" fill="#334155"/>
-            <rect x="50" y="76" width="60" height="6" rx="2" fill="#334155"/>
-            <!-- Camera emoji -->
-            <text x="160" y="145" font-size="24">📸</text>
-          </svg>
+      <!-- Navigation -->
+      <div class="nav">
+        <div class="dots" id="dots">
+          <span class="dot active" data-slide="0"></span>
+          <span class="dot" data-slide="1"></span>
+          <span class="dot" data-slide="2"></span>
+          <span class="dot" data-slide="3"></span>
         </div>
-        <h2>Capture Anything</h2>
-        <p>Visible area, full page, or custom selection. One click or keyboard shortcut.</p>
-        <div class="feature-pills">
-          <span class="pill">Visible Area</span>
-          <span class="pill">Full Page</span>
-          <span class="pill">Selection</span>
-        </div>
-      </div>
-
-      <!-- Slide 2: Annotations -->
-      <div class="slide" data-slide="2">
-        <div class="slide-illustration">
-          <svg viewBox="0 0 200 160" width="200" height="160">
-            <!-- Canvas -->
-            <rect x="20" y="10" width="160" height="130" rx="8" fill="#1E293B" stroke="#334155" stroke-width="2"/>
-            <!-- Arrow annotation -->
-            <line x1="45" y1="110" x2="120" y2="40" stroke="#EF4444" stroke-width="3"/>
-            <polygon points="120,40 110,45 115,52" fill="#EF4444"/>
-            <!-- Rectangle annotation -->
-            <rect x="70" y="55" width="60" height="35" rx="4" fill="none" stroke="#22D3EE" stroke-width="2"/>
-            <!-- Text annotation -->
-            <text x="80" y="75" font-size="12" fill="#EAB308" font-weight="bold">Bug!</text>
-            <!-- Highlight -->
-            <rect x="40" y="95" width="80" height="12" rx="2" fill="#EAB308" opacity="0.3"/>
-            <!-- Color dots -->
-            <circle cx="155" cy="30" r="6" fill="#EF4444"/>
-            <circle cx="155" cy="46" r="6" fill="#22D3EE"/>
-            <circle cx="155" cy="62" r="6" fill="#22C55E"/>
-          </svg>
-        </div>
-        <h2>Annotate & Edit</h2>
-        <p>Arrows, shapes, text, blur, highlight, crop — everything you need built in.</p>
-        <div class="feature-pills">
-          <span class="pill">9 Tools</span>
-          <span class="pill">Undo/Redo</span>
-          <span class="pill">Export PNG/JPG</span>
-        </div>
-      </div>
-
-      <!-- Slide 3: Recording -->
-      <div class="slide" data-slide="3">
-        <div class="slide-illustration">
-          <svg viewBox="0 0 200 160" width="200" height="160">
-            <!-- Screen -->
-            <rect x="25" y="10" width="150" height="100" rx="8" fill="#1E293B" stroke="#334155" stroke-width="2"/>
-            <!-- Play button -->
-            <polygon points="85,45 85,80 115,62.5" fill="#4F46E5" opacity="0.8"/>
-            <!-- REC indicator -->
-            <circle cx="50" cy="28" r="5" fill="#EF4444"/>
-            <text x="60" y="33" font-size="11" fill="#EF4444" font-weight="bold">REC</text>
-            <!-- Timer -->
-            <text x="130" y="33" font-size="10" fill="#94A3B8" font-family="monospace">02:34</text>
-            <!-- PiP webcam bubble -->
-            <circle cx="150" cy="90" r="18" fill="#0F172A" stroke="#22D3EE" stroke-width="2"/>
-            <circle cx="150" cy="86" r="6" fill="#94A3B8"/>
-            <ellipse cx="150" cy="98" rx="10" ry="6" fill="#94A3B8"/>
-            <!-- Controls bar -->
-            <rect x="55" y="125" width="90" height="24" rx="12" fill="#1E293B" stroke="#334155" stroke-width="1.5"/>
-            <circle cx="78" cy="137" r="6" fill="#EF4444"/>
-            <rect x="92" y="132" width="12" height="10" rx="2" fill="#94A3B8"/>
-            <rect x="112" y="132" width="12" height="10" rx="2" fill="#94A3B8"/>
-          </svg>
-        </div>
-        <h2>Record Your Screen</h2>
-        <p>Tab, full screen, or camera — with PiP overlay, audio controls, and no time limit.</p>
-        <div class="feature-pills">
-          <span class="pill">Tab / Screen / Camera</span>
-          <span class="pill">PiP Webcam</span>
-          <span class="pill">WebM & MP4</span>
+        <div class="nav-buttons">
+          <button id="btn-prev" class="btn btn-ghost" style="visibility: hidden">← Back</button>
+          <button id="btn-next" class="btn btn-primary">Next →</button>
         </div>
       </div>
     </div>
 
-    <!-- Navigation -->
-    <div class="nav">
-      <div class="dots" id="dots">
-        <span class="dot active" data-slide="0"></span>
-        <span class="dot" data-slide="1"></span>
-        <span class="dot" data-slide="2"></span>
-        <span class="dot" data-slide="3"></span>
-      </div>
-      <div class="nav-buttons">
-        <button id="btn-prev" class="btn btn-ghost" style="visibility:hidden;">← Back</button>
-        <button id="btn-next" class="btn btn-primary">Next →</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="welcome.js"></script>
-</body>
+    <script type="module" src="welcome.js"></script>
+  </body>
 </html>

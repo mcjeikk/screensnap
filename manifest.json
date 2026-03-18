@@ -19,7 +19,7 @@
     }
   },
   "background": {
-    "service_worker": "background/service-worker.js",
+    "service_worker": "background/service-worker.ts",
     "type": "module"
   },
   "permissions": [
@@ -33,12 +33,8 @@
     "scripting",
     "unlimitedStorage"
   ],
-  "optional_permissions": [
-    "notifications"
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "optional_permissions": ["notifications"],
+  "host_permissions": ["<all_urls>"],
   "commands": {
     "capture-visible": {
       "suggested_key": {
@@ -61,12 +57,8 @@
   },
   "web_accessible_resources": [
     {
-      "resources": [
-        "content/recording-widget.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
+      "resources": ["content/recording-widget.js"],
+      "matches": ["<all_urls>"]
     }
   ],
   "content_security_policy": {

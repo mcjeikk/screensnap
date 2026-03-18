@@ -1,203 +1,203 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ScreenBolt — Settings</title>
-  <link rel="stylesheet" href="../assets/styles/themes.css">
-  <link rel="stylesheet" href="settings.css">
-  <script src="../assets/scripts/theme-init.js"></script>
-</head>
-<body>
-  <div class="settings-app">
-    <header class="header">
-      <div class="header-left">
-        <img src="../assets/icons/icon-32.png" alt="ScreenBolt" class="logo">
-        <h1>Settings</h1>
-      </div>
-      <span class="version" aria-label="Version 0.5.0">v0.5.0</span>
-    </header>
-
-    <!-- Screenshot Settings -->
-    <section class="settings-section">
-      <h2>📸 Screenshot</h2>
-
-      <div class="setting-row">
-        <label>Default format</label>
-        <select id="ss-format">
-          <option value="png">PNG</option>
-          <option value="jpg">JPG</option>
-        </select>
-      </div>
-
-      <div class="setting-row" id="jpg-quality-row">
-        <label>JPG quality</label>
-        <div class="slider-group">
-          <input type="range" id="ss-jpg-quality" min="60" max="100" value="92">
-          <span id="ss-jpg-quality-val" class="slider-val">92%</span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScreenBolt — Settings</title>
+    <link rel="stylesheet" href="../assets/styles/themes.css" />
+    <link rel="stylesheet" href="settings.css" />
+    <script src="../assets/scripts/theme-init.js"></script>
+  </head>
+  <body>
+    <div class="settings-app">
+      <header class="header">
+        <div class="header-left">
+          <img src="../assets/icons/icon-32.png" alt="ScreenBolt" class="logo" />
+          <h1>Settings</h1>
         </div>
-      </div>
+        <span class="version" aria-label="Version 0.5.0">v0.5.0</span>
+      </header>
 
-      <div class="setting-row">
-        <label>After capture</label>
-        <select id="ss-after-capture">
-          <option value="editor">Open in Editor</option>
-          <option value="save">Save directly</option>
-          <option value="clipboard">Copy to clipboard</option>
-        </select>
-      </div>
+      <!-- Screenshot Settings -->
+      <section class="settings-section">
+        <h2>📸 Screenshot</h2>
 
-      <div class="setting-row">
-        <label>Save subfolder</label>
-        <input type="text" id="ss-subfolder" placeholder="e.g. ScreenBolt" class="text-input">
-      </div>
-    </section>
-
-    <!-- Recording Settings -->
-    <section class="settings-section">
-      <h2>🎥 Recording</h2>
-
-      <div class="setting-row">
-        <label>Default resolution</label>
-        <select id="rec-resolution">
-          <option value="720">720p</option>
-          <option value="1080">1080p</option>
-          <option value="2160">4K</option>
-        </select>
-      </div>
-
-      <div class="setting-row">
-        <label>Default audio</label>
-        <select id="rec-audio">
-          <option value="both">System + Mic</option>
-          <option value="system">System only</option>
-          <option value="mic">Mic only</option>
-          <option value="none">No audio</option>
-        </select>
-      </div>
-
-      <div class="setting-row">
-        <label>Webcam PiP</label>
-        <select id="rec-pip">
-          <option value="off">Off</option>
-          <option value="on">On</option>
-        </select>
-      </div>
-
-      <div class="setting-row">
-        <label>PiP position</label>
-        <select id="rec-pip-position">
-          <option value="bottom-right">Bottom Right</option>
-          <option value="bottom-left">Bottom Left</option>
-          <option value="top-right">Top Right</option>
-          <option value="top-left">Top Left</option>
-        </select>
-      </div>
-
-      <div class="setting-row">
-        <label>PiP size</label>
-        <select id="rec-pip-size">
-          <option value="small">Small</option>
-          <option value="medium">Medium</option>
-          <option value="large">Large</option>
-        </select>
-      </div>
-
-      <div class="setting-row">
-        <label>Countdown</label>
-        <select id="rec-countdown">
-          <option value="on">On</option>
-          <option value="off">Off</option>
-        </select>
-      </div>
-
-      <div class="setting-row">
-        <label>Default format</label>
-        <select id="rec-format">
-          <option value="webm">WebM</option>
-          <option value="mp4">MP4</option>
-        </select>
-      </div>
-    </section>
-
-    <!-- General Settings -->
-    <section class="settings-section">
-      <h2>⚙️ General</h2>
-
-      <div class="setting-row">
-        <label>Theme</label>
-        <select id="gen-theme">
-          <option value="dark">Dark</option>
-          <option value="light">Light</option>
-          <option value="system">System (auto)</option>
-        </select>
-      </div>
-
-      <div class="setting-row">
-        <label>Notifications after capture</label>
-        <select id="gen-notifications">
-          <option value="on">On</option>
-          <option value="off">Off</option>
-        </select>
-      </div>
-
-      <div class="setting-row">
-        <label>Keep history</label>
-        <select id="gen-keep-history">
-          <option value="on">On</option>
-          <option value="off">Off</option>
-        </select>
-      </div>
-
-      <div class="setting-row">
-        <label>Max history items</label>
-        <select id="gen-max-history">
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-        </select>
-      </div>
-    </section>
-
-    <!-- Keyboard Shortcuts (read-only) -->
-    <section class="settings-section">
-      <h2>⌨️ Keyboard Shortcuts</h2>
-      <div class="shortcuts-list">
-        <div class="shortcut-row">
-          <span>Capture visible area</span>
-          <kbd>Alt+Shift+V</kbd>
+        <div class="setting-row">
+          <label>Default format</label>
+          <select id="ss-format">
+            <option value="png">PNG</option>
+            <option value="jpg">JPG</option>
+          </select>
         </div>
-        <div class="shortcut-row">
-          <span>Capture full page</span>
-          <kbd>Alt+Shift+F</kbd>
-        </div>
-        <div class="shortcut-row">
-          <span>Capture selection</span>
-          <kbd>Alt+Shift+S</kbd>
-        </div>
-        <div class="shortcut-row">
-          <span class="shortcut-group-label">Editor tools:</span>
-        </div>
-        <div class="shortcut-row sub">
-          <span>Arrow / Rect / Ellipse / Line</span>
-          <kbd>A R E L</kbd>
-        </div>
-        <div class="shortcut-row sub">
-          <span>Pen / Text / Blur / Highlight / Crop</span>
-          <kbd>P T B H C</kbd>
-        </div>
-        <div class="shortcut-row sub">
-          <span>Undo / Redo</span>
-          <kbd>Ctrl+Z / Ctrl+Shift+Z</kbd>
-        </div>
-      </div>
-      <p class="shortcut-note">To change capture shortcuts, go to <code>chrome://extensions/shortcuts</code></p>
-    </section>
 
-    <!-- Save status -->
-    <div id="save-status" class="save-status">Settings saved ✓</div>
-  </div>
+        <div class="setting-row" id="jpg-quality-row">
+          <label>JPG quality</label>
+          <div class="slider-group">
+            <input type="range" id="ss-jpg-quality" min="60" max="100" value="92" />
+            <span id="ss-jpg-quality-val" class="slider-val">92%</span>
+          </div>
+        </div>
 
-  <script src="settings.js"></script>
-</body>
+        <div class="setting-row">
+          <label>After capture</label>
+          <select id="ss-after-capture">
+            <option value="editor">Open in Editor</option>
+            <option value="save">Save directly</option>
+            <option value="clipboard">Copy to clipboard</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>Save subfolder</label>
+          <input type="text" id="ss-subfolder" placeholder="e.g. ScreenBolt" class="text-input" />
+        </div>
+      </section>
+
+      <!-- Recording Settings -->
+      <section class="settings-section">
+        <h2>🎥 Recording</h2>
+
+        <div class="setting-row">
+          <label>Default resolution</label>
+          <select id="rec-resolution">
+            <option value="720">720p</option>
+            <option value="1080">1080p</option>
+            <option value="2160">4K</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>Default audio</label>
+          <select id="rec-audio">
+            <option value="both">System + Mic</option>
+            <option value="system">System only</option>
+            <option value="mic">Mic only</option>
+            <option value="none">No audio</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>Webcam PiP</label>
+          <select id="rec-pip">
+            <option value="off">Off</option>
+            <option value="on">On</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>PiP position</label>
+          <select id="rec-pip-position">
+            <option value="bottom-right">Bottom Right</option>
+            <option value="bottom-left">Bottom Left</option>
+            <option value="top-right">Top Right</option>
+            <option value="top-left">Top Left</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>PiP size</label>
+          <select id="rec-pip-size">
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+            <option value="large">Large</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>Countdown</label>
+          <select id="rec-countdown">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>Default format</label>
+          <select id="rec-format">
+            <option value="webm">WebM</option>
+            <option value="mp4">MP4</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- General Settings -->
+      <section class="settings-section">
+        <h2>⚙️ General</h2>
+
+        <div class="setting-row">
+          <label>Theme</label>
+          <select id="gen-theme">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+            <option value="system">System (auto)</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>Notifications after capture</label>
+          <select id="gen-notifications">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>Keep history</label>
+          <select id="gen-keep-history">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>Max history items</label>
+          <select id="gen-max-history">
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Keyboard Shortcuts (read-only) -->
+      <section class="settings-section">
+        <h2>⌨️ Keyboard Shortcuts</h2>
+        <div class="shortcuts-list">
+          <div class="shortcut-row">
+            <span>Capture visible area</span>
+            <kbd>Alt+Shift+V</kbd>
+          </div>
+          <div class="shortcut-row">
+            <span>Capture full page</span>
+            <kbd>Alt+Shift+F</kbd>
+          </div>
+          <div class="shortcut-row">
+            <span>Capture selection</span>
+            <kbd>Alt+Shift+S</kbd>
+          </div>
+          <div class="shortcut-row">
+            <span class="shortcut-group-label">Editor tools:</span>
+          </div>
+          <div class="shortcut-row sub">
+            <span>Arrow / Rect / Ellipse / Line</span>
+            <kbd>A R E L</kbd>
+          </div>
+          <div class="shortcut-row sub">
+            <span>Pen / Text / Blur / Highlight / Crop</span>
+            <kbd>P T B H C</kbd>
+          </div>
+          <div class="shortcut-row sub">
+            <span>Undo / Redo</span>
+            <kbd>Ctrl+Z / Ctrl+Shift+Z</kbd>
+          </div>
+        </div>
+        <p class="shortcut-note">To change capture shortcuts, go to <code>chrome://extensions/shortcuts</code></p>
+      </section>
+
+      <!-- Save status -->
+      <div id="save-status" class="save-status">Settings saved ✓</div>
+    </div>
+
+    <script type="module" src="settings.js"></script>
+  </body>
 </html>

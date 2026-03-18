@@ -17,10 +17,7 @@ async function generateWithSharp() {
   const sharp = require('sharp');
   for (const size of sizes) {
     const outPath = path.join(__dirname, `icon-${size}.png`);
-    await sharp(Buffer.from(svgContent))
-      .resize(size, size)
-      .png()
-      .toFile(outPath);
+    await sharp(Buffer.from(svgContent)).resize(size, size).png().toFile(outPath);
     console.log(`Generated ${outPath} (${size}x${size})`);
   }
 }

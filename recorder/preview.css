@@ -1,19 +1,19 @@
 /* ScreenBolt Preview Styles */
 
 :root {
-  --primary: var(--ss-primary, #4F46E5);
-  --primary-hover: var(--ss-primary-hover, #4338CA);
-  --danger: var(--ss-danger, #EF4444);
-  --bg: var(--ss-bg, #0F172A);
-  --bg-card: var(--ss-bg-card, #1E293B);
+  --primary: var(--ss-primary, #4f46e5);
+  --primary-hover: var(--ss-primary-hover, #4338ca);
+  --danger: var(--ss-danger, #ef4444);
+  --bg: var(--ss-bg, #0f172a);
+  --bg-card: var(--ss-bg-card, #1e293b);
   --bg-input: var(--ss-bg-input, #334155);
-  --text: var(--ss-text, #F1F5F9);
-  --text-muted: var(--ss-text-muted, #94A3B8);
+  --text: var(--ss-text, #f1f5f9);
+  --text-muted: var(--ss-text-muted, #94a3b8);
   --border: var(--ss-border, #334155);
   --radius: var(--ss-radius, 12px);
   --radius-sm: var(--ss-radius-sm, 8px);
-  --accent: var(--ss-accent, #22D3EE);
-  --success: var(--ss-success, #22C55E);
+  --accent: var(--ss-accent, #22d3ee);
+  --success: var(--ss-success, #22c55e);
 }
 
 * {
@@ -73,7 +73,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Video Container */
@@ -213,5 +215,5 @@ body {
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: var(--radius-sm);
   text-align: center;
-  color: #FCA5A5;
+  color: #fca5a5;
 }

@@ -142,7 +142,7 @@ body {
   cursor: pointer;
 }
 
-.color-picker-wrapper input[type="color"] {
+.color-picker-wrapper input[type='color'] {
   position: absolute;
   width: 0;
   height: 0;
@@ -155,7 +155,7 @@ body {
   height: 26px;
   border-radius: 50%;
   border: 2px solid var(--ss-border);
-  background: #FF0000;
+  background: #ff0000;
   transition: border-color 0.15s;
 }
 
@@ -195,7 +195,11 @@ body {
     linear-gradient(45deg, transparent 75%, var(--ss-canvas-checker1) 75%),
     linear-gradient(-45deg, transparent 75%, var(--ss-canvas-checker1) 75%);
   background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+  background-position:
+    0 0,
+    0 10px,
+    10px -10px,
+    -10px 0;
 }
 
 #editor-canvas {
@@ -206,10 +210,18 @@ body {
 }
 
 /* Canvas cursor overrides */
-#editor-canvas.cursor-crosshair { cursor: crosshair; }
-#editor-canvas.cursor-text { cursor: text; }
-#editor-canvas.cursor-move { cursor: move; }
-#editor-canvas.cursor-crop { cursor: crosshair; }
+#editor-canvas.cursor-crosshair {
+  cursor: crosshair;
+}
+#editor-canvas.cursor-text {
+  cursor: text;
+}
+#editor-canvas.cursor-move {
+  cursor: move;
+}
+#editor-canvas.cursor-crop {
+  cursor: crosshair;
+}
 
 /* ── Crop apply button ── */
 .crop-apply-btn {
@@ -271,6 +283,12 @@ body {
 
 /* ── Toast animation ── */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }

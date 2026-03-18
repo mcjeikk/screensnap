@@ -1,5 +1,65 @@
 # Changelog
 
+All notable changes to ScreenBolt will be documented in this file.
+
+Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
+
+## [0.8.8] — 2026-03-16
+
+### Fixed
+- **Webcam bubble restored**: PiP webcam bubble is visible and draggable on the page, captured naturally by tabCapture
+- **No double permission page**: Removed duplicate permission page opening during recording start
+
+## [0.8.7] — 2026-03-16
+
+### Fixed
+- **Permissions UX**: Improved permission request flow for microphone and camera
+- **Popup toggle persistence**: Recording toggles (mic, PiP) now persist correctly across popup reopens
+- **PiP moved to offscreen**: PiP webcam compositing moved to offscreen document for reliability
+
+## [0.8.6] — 2026-03-16
+
+### Added
+- **PiP webcam as visible bubble**: Webcam overlay rendered as a draggable circular bubble directly on the page — tabCapture captures it naturally without offscreen canvas compositing
+
+### Fixed
+- **MP4 recording restored**: Native MP4 via MediaRecorder working again after WebM revert
+
+## [0.8.5] — 2026-03-16
+
+### Fixed
+- **Base64 chunk encoding**: Fixed encoding of recording data chunks for storage relay
+- **1MB chunk size**: Reduced chunk size to 1MB for reliable message passing
+- **Audio playback guard**: Added safety check before playing back tab audio during recording
+
+## [0.8.4] — 2026-03-16
+
+### Fixed
+- **Reverted to WebM**: Native MP4 recording caused black video in some configurations — reverted to WebM (VP9+Opus) as default format
+- **Simplified download**: Removed unnecessary conversion step in recording export
+
+## [0.8.3] — 2026-03-16
+
+### Added
+- **Auto-request permissions**: Toggling microphone or PiP webcam now auto-requests browser permissions — removed separate "Grant" button
+
+## [0.8.2] — 2026-03-16
+
+### Fixed
+- **Permissions handling**: Removed `navigator.permissions.query()` guard — uses `getUserMedia()` directly for PiP webcam permission flow (more reliable across Chrome versions)
+
+## [0.8.1] — 2026-03-16
+
+### Fixed
+- **Tab audio playback**: Tab audio now plays back during recording — `chrome.tabCapture` mutes the tab by default, so audio is routed through AudioContext destination
+
+## [0.8.0] — 2026-03-16
+
+### Changed
+- **Native MP4 recording**: Uses Chrome 130+ native MediaRecorder MP4 support (H.264+AAC) instead of ffmpeg.wasm
+- **Removed ffmpeg.wasm entirely**: No more 32MB ffmpeg bundle, sandbox iframe, or CDN loading — all recording is native browser APIs
+- **Simplified architecture**: Recording produces WebM or MP4 directly from MediaRecorder, no post-processing conversion step
+
 ## [0.7.0] — 2026-03-16
 
 ### Changed
@@ -29,11 +89,6 @@
 ### Fixed
 - **CSP compliance**: Bundled ffmpeg.wasm wrapper locally instead of loading from CDN (Chrome MV3 blocks external scripts in CSP)
 - MP4 conversion now works — ffmpeg/util loaded as UMD scripts, core.wasm fetched on-demand via blob URL
-
-
-All notable changes to ScreenBolt will be documented in this file.
-
-Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [0.6.1] - 2026-03-16
 

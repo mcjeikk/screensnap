@@ -15,3 +15,5 @@ node_modules/
 
 # Local dev
 *.pem
+content/content-script.js
+content/recording-widget.js

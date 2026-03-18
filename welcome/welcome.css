@@ -1,6 +1,10 @@
 /* ScreenBolt — Welcome / Onboarding Styles */
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -33,11 +37,19 @@ body {
   animation: slideIn 0.4s ease;
 }
 
-.slide.active { display: flex; }
+.slide.active {
+  display: flex;
+}
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateX(30px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .slide-illustration {
@@ -54,7 +66,7 @@ body {
 }
 
 .slide h1 .brand {
-  background: linear-gradient(135deg, #4F46E5, #22D3EE);
+  background: linear-gradient(135deg, #4f46e5, #22d3ee);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -145,14 +157,18 @@ body {
   color: white;
 }
 
-.btn-primary:hover { background: var(--ss-primary-hover); }
+.btn-primary:hover {
+  background: var(--ss-primary-hover);
+}
 
 .btn-ghost {
   background: transparent;
   color: var(--ss-text-muted);
 }
 
-.btn-ghost:hover { color: var(--ss-text); }
+.btn-ghost:hover {
+  color: var(--ss-text);
+}
 
 .btn-success {
   background: #059669;
@@ -161,4 +177,6 @@ body {
   padding: 14px 36px;
 }
 
-.btn-success:hover { background: #047857; }
+.btn-success:hover {
+  background: #047857;
+}

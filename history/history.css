@@ -1,6 +1,10 @@
 /* ScreenBolt — History Page Styles */
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -33,8 +37,15 @@ body {
   gap: 12px;
 }
 
-.header-left .logo { width: 32px; height: 32px; }
-.header-left h1 { font-size: 22px; font-weight: 700; color: var(--ss-primary); }
+.header-left .logo {
+  width: 32px;
+  height: 32px;
+}
+.header-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ss-primary);
+}
 
 .header-right {
   display: flex;
@@ -64,7 +75,10 @@ body {
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.btn-danger:hover { background: var(--ss-danger); color: white; }
+.btn-danger:hover {
+  background: var(--ss-danger);
+  color: white;
+}
 
 .btn-secondary {
   background: var(--ss-bg-input);
@@ -72,7 +86,10 @@ body {
   border: 1px solid var(--ss-border);
 }
 
-.btn-secondary:hover { background: var(--ss-primary); color: white; }
+.btn-secondary:hover {
+  background: var(--ss-primary);
+  color: white;
+}
 
 /* Controls bar */
 .controls {
@@ -104,7 +121,9 @@ body {
   transition: all 0.15s;
 }
 
-.filter-btn:hover { color: var(--ss-text); }
+.filter-btn:hover {
+  color: var(--ss-text);
+}
 .filter-btn.active {
   background: var(--ss-primary);
   color: white;
@@ -128,8 +147,12 @@ body {
   transition: border-color 0.15s;
 }
 
-.search-box input:focus { border-color: var(--ss-primary); }
-.search-box input::placeholder { color: var(--ss-text-muted); }
+.search-box input:focus {
+  border-color: var(--ss-primary);
+}
+.search-box input::placeholder {
+  color: var(--ss-text-muted);
+}
 
 .sort-select {
   padding: 8px 12px;
@@ -232,8 +255,12 @@ body {
   transition: opacity 0.15s;
 }
 
-.history-item:hover .item-delete { opacity: 1; }
-.item-delete:hover { background: var(--ss-danger); }
+.history-item:hover .item-delete {
+  opacity: 1;
+}
+.item-delete:hover {
+  background: var(--ss-danger);
+}
 
 /* Duration overlay for recordings */
 .item-duration {
@@ -255,9 +282,18 @@ body {
   color: var(--ss-text-muted);
 }
 
-.empty-icon { font-size: 64px; margin-bottom: 16px; }
-.empty-state h2 { font-size: 20px; margin-bottom: 8px; color: var(--ss-text); }
-.empty-state p { font-size: 14px; }
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+.empty-state h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: var(--ss-text);
+}
+.empty-state p {
+  font-size: 14px;
+}
 
 /* Load more */
 .load-more-container {
@@ -285,9 +321,20 @@ body {
   text-align: center;
 }
 
-.confirm-dialog h3 { margin-bottom: 12px; font-size: 18px; }
-.confirm-dialog p { margin-bottom: 20px; font-size: 14px; color: var(--ss-text-muted); }
-.confirm-dialog .dialog-buttons { display: flex; gap: 10px; justify-content: center; }
+.confirm-dialog h3 {
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+.confirm-dialog p {
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--ss-text-muted);
+}
+.confirm-dialog .dialog-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
 
 .btn-confirm-yes {
   padding: 10px 24px;

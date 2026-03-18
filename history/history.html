@@ -1,66 +1,66 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ScreenBolt — History</title>
-  <link rel="stylesheet" href="../assets/styles/themes.css">
-  <link rel="stylesheet" href="history.css">
-  <script src="../assets/scripts/theme-init.js"></script>
-</head>
-<body>
-  <div class="history-app">
-    <header class="header">
-      <div class="header-left">
-        <img src="../assets/icons/icon-32.png" alt="ScreenBolt" class="logo">
-        <h1>Capture History</h1>
-      </div>
-      <div class="header-right">
-        <span id="count-label" class="count-label">0 items</span>
-        <button id="btn-clear-all" class="btn btn-danger" title="Clear all history">🗑️ Clear All</button>
-      </div>
-    </header>
-
-    <!-- Toolbar: filters, search, sort -->
-    <div class="controls">
-      <div class="filter-tabs">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="screenshot">📸 Screenshots</button>
-        <button class="filter-btn" data-filter="recording">🎥 Recordings</button>
-      </div>
-      <div class="controls-right">
-        <div class="search-box">
-          <input type="text" id="search-input" placeholder="Search by name…">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScreenBolt — History</title>
+    <link rel="stylesheet" href="../assets/styles/themes.css" />
+    <link rel="stylesheet" href="history.css" />
+    <script src="../assets/scripts/theme-init.js"></script>
+  </head>
+  <body>
+    <div class="history-app">
+      <header class="header">
+        <div class="header-left">
+          <img src="../assets/icons/icon-32.png" alt="ScreenBolt" class="logo" />
+          <h1>Capture History</h1>
         </div>
-        <select id="sort-select" class="sort-select">
-          <option value="date-desc">Newest first</option>
-          <option value="date-asc">Oldest first</option>
-          <option value="size-desc">Largest first</option>
-          <option value="size-asc">Smallest first</option>
-          <option value="name-asc">Name A-Z</option>
-          <option value="name-desc">Name Z-A</option>
-        </select>
+        <div class="header-right">
+          <span id="count-label" class="count-label">0 items</span>
+          <button id="btn-clear-all" class="btn btn-danger" title="Clear all history">🗑️ Clear All</button>
+        </div>
+      </header>
+
+      <!-- Toolbar: filters, search, sort -->
+      <div class="controls">
+        <div class="filter-tabs">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="screenshot">📸 Screenshots</button>
+          <button class="filter-btn" data-filter="recording">🎥 Recordings</button>
+        </div>
+        <div class="controls-right">
+          <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search by name…" />
+          </div>
+          <select id="sort-select" class="sort-select">
+            <option value="date-desc">Newest first</option>
+            <option value="date-asc">Oldest first</option>
+            <option value="size-desc">Largest first</option>
+            <option value="size-asc">Smallest first</option>
+            <option value="name-asc">Name A-Z</option>
+            <option value="name-desc">Name Z-A</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grid of items -->
+      <div id="history-grid" class="history-grid">
+        <!-- Items rendered by JS -->
+      </div>
+
+      <!-- Empty state -->
+      <div id="empty-state" class="empty-state" style="display: none">
+        <div class="empty-icon">📭</div>
+        <h2>No captures yet</h2>
+        <p>Take a screenshot or start a recording to see it here.</p>
+      </div>
+
+      <!-- Load more -->
+      <div id="load-more-container" class="load-more-container" style="display: none">
+        <button id="btn-load-more" class="btn btn-secondary">Load more…</button>
       </div>
     </div>
 
-    <!-- Grid of items -->
-    <div id="history-grid" class="history-grid">
-      <!-- Items rendered by JS -->
-    </div>
-
-    <!-- Empty state -->
-    <div id="empty-state" class="empty-state" style="display:none;">
-      <div class="empty-icon">📭</div>
-      <h2>No captures yet</h2>
-      <p>Take a screenshot or start a recording to see it here.</p>
-    </div>
-
-    <!-- Load more -->
-    <div id="load-more-container" class="load-more-container" style="display:none;">
-      <button id="btn-load-more" class="btn btn-secondary">Load more…</button>
-    </div>
-  </div>
-
-  <script src="history.js"></script>
-</body>
+    <script type="module" src="history.js"></script>
+  </body>
 </html>

@@ -6,7 +6,7 @@
 [![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/)
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-22C55E)](https://developer.chrome.com/docs/extensions/mv3/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.4.2-indigo)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.8.8-indigo)](CHANGELOG.md)
 
 ---
 
@@ -40,7 +40,7 @@
 - 🎤 **Audio Controls** — Mic + system audio, independently togglable
 - ⏸️ **Pause/Resume** — Take breaks during recording
 - ⏱️ **No Time Limit** — Record as long as you need
-- 🔄 **WebM & MP4** export (MP4 via ffmpeg.wasm)
+- 🔄 **WebM & MP4** export (native MediaRecorder)
 
 ### 📁 History
 - Grid view with thumbnails for all captures
@@ -95,51 +95,67 @@
 
 ```
 screenbolt/
-├── manifest.json            # Extension manifest (MV3)
+├── manifest.json                 # Extension manifest (MV3)
 ├── background/
-│   └── service-worker.js    # Central message router & coordinator
+│   └── service-worker.js         # Central coordinator & message router (ES modules)
 ├── popup/
-│   ├── popup.html/js/css    # Extension popup UI
+│   └── popup.html/js/css         # Extension popup — screenshots + inline recording config
 ├── content/
-│   ├── content-script.js    # Selection overlay & full-page capture
-│   └── content-style.css    # Selection overlay styles
+│   ├── content-script.js         # Selection overlay & full-page scroll-stitch capture
+│   ├── content-style.css         # Selection overlay styles
+│   └── recording-widget.js       # Floating recording controls (shadow DOM) + PiP webcam
 ├── editor/
-│   ├── editor.html/js/css   # Annotation editor (Canvas API)
+│   └── editor.html/js/css        # Canvas-based annotation editor (9 tools)
 ├── recorder/
-│   ├── recorder.html/js/css # Recording configuration & MediaRecorder
-│   ├── preview.html/js/css  # Post-recording preview & export
-│   ├── recording-controls.js/css  # Floating widget (injected into pages)
-├── history/
-│   ├── history.html/js/css  # Capture history browser
-├── settings/
-│   ├── settings.html/js/css # Extension settings
-├── welcome/
-│   ├── welcome.html/js/css  # Onboarding slides
+│   └── preview.html/js/css       # Post-recording preview & download
 ├── offscreen/
-│   ├── offscreen.html/js    # Clipboard proxy (MV3 requirement)
+│   └── recorder-offscreen.html/js # MediaRecorder + audio mixing + clipboard proxy
+├── history/
+│   └── history.html/js/css       # Capture history browser with search/filter/sort
+├── settings/
+│   └── settings.html/js/css      # Extension settings (synced via chrome.storage.sync)
+├── welcome/
+│   └── welcome.html/js/css       # Onboarding slides (shown on first install)
+├── permissions/
+│   └── permissions.html/js       # Mic/camera permission grant page
 ├── utils/
-│   ├── constants.js         # Shared constants & enums
-│   ├── logger.js            # Structured logging system
-│   ├── storage.js           # chrome.storage wrapper
-│   ├── helpers.js           # Shared utility functions
-│   └── messages.js          # Type-safe message passing
+│   ├── constants.js              # MESSAGE_TYPES, STORAGE_KEYS, DEFAULT_SETTINGS
+│   ├── logger.js                 # Structured logging with module prefixes
+│   ├── storage.js                # chrome.storage wrapper with quota handling
+│   ├── helpers.js                # Timestamps, formatting, sanitization, debounce
+│   ├── messages.js               # Type-safe message passing with validation
+│   ├── errors.js                 # ExtensionError class, error codes, withRetry()
+│   ├── feature-detection.js      # Cross-browser capability checks
+│   └── migration.js              # Versioned data migration runner
 ├── assets/
-│   ├── icons/               # Extension icons (16/32/48/128px)
-│   ├── styles/themes.css    # Theme system (CSS custom properties)
-│   └── scripts/theme-init.js # Theme pre-loader
-├── docs/
-│   └── BEST_PRACTICES.md    # Development guidelines
-├── CHANGELOG.md             # Version history
-└── README.md                # This file
+│   ├── icons/                    # Extension icons (16/32/48/128px + SVG source)
+│   ├── styles/themes.css         # CSS custom properties for dark/light/system themes
+│   └── scripts/theme-init.js     # Theme pre-loader (prevents flash)
+├── _locales/                     # i18n (English, Spanish, Portuguese)
+├── docs/                         # Development guidelines & audit results
+├── store/                        # Chrome Web Store assets & publishing guide
+├── CHANGELOG.md
+└── README.md
+```
+
+### Recording Flow (v0.7.0+)
+
+```
+Popup (config) → Service Worker (orchestrator)
+                  ├→ Offscreen Document (MediaRecorder + audio mixing)
+                  ├→ Content Script: Recording Widget (timer, pause, stop)
+                  └→ Content Script: PiP Webcam Bubble (visible, captured by tabCapture)
 ```
 
 ### Key Design Decisions
 
-- **Vanilla JS** — No frameworks, no build step, no dependencies
+- **Vanilla JS** — No frameworks, no build step, zero dependencies
 - **Canvas API** — All annotations rendered directly on canvas
-- **MV3 Compatible** — Service worker, offscreen documents for clipboard
+- **MV3 Native** — Service worker, offscreen documents, ES modules
 - **Message Router** — Centralized pub/sub pattern in service worker
-- **Theme System** — CSS custom properties for consistent theming
+- **Shadow DOM** — Recording widget CSS-isolated from page styles
+- **TabCapture PiP** — Webcam bubble visible on page, captured naturally by tabCapture
+- **Theme System** — CSS custom properties for consistent dark/light/system theming
 - **Session Storage** — Recording state survives SW restart within a session
 
 ---

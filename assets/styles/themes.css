@@ -6,23 +6,23 @@
 
 /* ── Dark Theme (default) ── */
 :root {
-  --ss-primary: #4F46E5;
-  --ss-primary-hover: #4338CA;
+  --ss-primary: #4f46e5;
+  --ss-primary-hover: #4338ca;
   --ss-primary-light: rgba(79, 70, 229, 0.15);
-  --ss-accent: #22D3EE;
-  --ss-danger: #EF4444;
-  --ss-danger-hover: #DC2626;
+  --ss-accent: #22d3ee;
+  --ss-danger: #ef4444;
+  --ss-danger-hover: #dc2626;
   --ss-success: #059669;
-  --ss-warning: #EAB308;
+  --ss-warning: #eab308;
 
-  --ss-bg: #0F172A;
-  --ss-bg-card: #1E293B;
+  --ss-bg: #0f172a;
+  --ss-bg-card: #1e293b;
   --ss-bg-input: #334155;
   --ss-bg-hover: rgba(255, 255, 255, 0.06);
   --ss-bg-toolbar: #16213e;
 
-  --ss-text: #F1F5F9;
-  --ss-text-muted: #94A3B8;
+  --ss-text: #f1f5f9;
+  --ss-text-muted: #94a3b8;
   --ss-text-inverse: #111827;
 
   --ss-border: #334155;
@@ -40,63 +40,63 @@
   --ss-canvas-checker2: transparent;
 
   /* Scrollbar */
-  --ss-scrollbar-bg: #1E293B;
+  --ss-scrollbar-bg: #1e293b;
   --ss-scrollbar-thumb: #475569;
 
   color-scheme: dark;
 }
 
 /* ── Light Theme ── */
-[data-theme="light"] {
-  --ss-bg: #F8FAFC;
-  --ss-bg-card: #FFFFFF;
-  --ss-bg-input: #F1F5F9;
+[data-theme='light'] {
+  --ss-bg: #f8fafc;
+  --ss-bg-card: #ffffff;
+  --ss-bg-input: #f1f5f9;
   --ss-bg-hover: rgba(0, 0, 0, 0.04);
-  --ss-bg-toolbar: #FFFFFF;
+  --ss-bg-toolbar: #ffffff;
 
   --ss-text: #111827;
-  --ss-text-muted: #6B7280;
-  --ss-text-inverse: #F1F5F9;
+  --ss-text-muted: #6b7280;
+  --ss-text-inverse: #f1f5f9;
 
-  --ss-border: #E5E7EB;
+  --ss-border: #e5e7eb;
   --ss-border-light: rgba(0, 0, 0, 0.06);
 
   --ss-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --ss-shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.12);
 
-  --ss-canvas-checker1: #E5E7EB;
+  --ss-canvas-checker1: #e5e7eb;
   --ss-canvas-checker2: transparent;
 
-  --ss-scrollbar-bg: #F1F5F9;
-  --ss-scrollbar-thumb: #CBD5E1;
+  --ss-scrollbar-bg: #f1f5f9;
+  --ss-scrollbar-thumb: #cbd5e1;
 
   color-scheme: light;
 }
 
 /* ── System Theme — auto-detect via prefers-color-scheme ── */
 @media (prefers-color-scheme: light) {
-  [data-theme="system"] {
-    --ss-bg: #F8FAFC;
-    --ss-bg-card: #FFFFFF;
-    --ss-bg-input: #F1F5F9;
+  [data-theme='system'] {
+    --ss-bg: #f8fafc;
+    --ss-bg-card: #ffffff;
+    --ss-bg-input: #f1f5f9;
     --ss-bg-hover: rgba(0, 0, 0, 0.04);
-    --ss-bg-toolbar: #FFFFFF;
+    --ss-bg-toolbar: #ffffff;
 
     --ss-text: #111827;
-    --ss-text-muted: #6B7280;
-    --ss-text-inverse: #F1F5F9;
+    --ss-text-muted: #6b7280;
+    --ss-text-inverse: #f1f5f9;
 
-    --ss-border: #E5E7EB;
+    --ss-border: #e5e7eb;
     --ss-border-light: rgba(0, 0, 0, 0.06);
 
     --ss-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     --ss-shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.12);
 
-    --ss-canvas-checker1: #E5E7EB;
+    --ss-canvas-checker1: #e5e7eb;
     --ss-canvas-checker2: transparent;
 
-    --ss-scrollbar-bg: #F1F5F9;
-    --ss-scrollbar-thumb: #CBD5E1;
+    --ss-scrollbar-bg: #f1f5f9;
+    --ss-scrollbar-thumb: #cbd5e1;
 
     color-scheme: light;
   }
@@ -126,5 +126,9 @@
 .theme-transition *,
 .theme-transition *::before,
 .theme-transition *::after {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease !important;
 }

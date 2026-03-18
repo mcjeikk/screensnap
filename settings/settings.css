@@ -1,6 +1,10 @@
 /* ScreenBolt — Settings Page Styles */
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -31,8 +35,15 @@ body {
   gap: 12px;
 }
 
-.header-left .logo { width: 32px; height: 32px; }
-.header-left h1 { font-size: 22px; font-weight: 700; color: var(--ss-primary); }
+.header-left .logo {
+  width: 32px;
+  height: 32px;
+}
+.header-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ss-primary);
+}
 
 .version {
   font-size: 12px;
@@ -71,7 +82,9 @@ body {
   border-bottom: 1px solid var(--ss-border-light);
 }
 
-.setting-row:last-child { border-bottom: none; }
+.setting-row:last-child {
+  border-bottom: none;
+}
 
 .setting-row label {
   font-size: 14px;
@@ -93,9 +106,13 @@ body {
 }
 
 .setting-row select:focus,
-.text-input:focus { border-color: var(--ss-primary); }
+.text-input:focus {
+  border-color: var(--ss-primary);
+}
 
-.text-input::placeholder { color: var(--ss-text-muted); }
+.text-input::placeholder {
+  color: var(--ss-text-muted);
+}
 
 /* Slider group */
 .slider-group {
@@ -104,7 +121,7 @@ body {
   gap: 10px;
 }
 
-.slider-group input[type="range"] {
+.slider-group input[type='range'] {
   width: 120px;
   accent-color: var(--ss-primary);
 }
@@ -132,7 +149,10 @@ body {
   font-size: 14px;
 }
 
-.shortcut-row.sub { padding-left: 16px; font-size: 13px; }
+.shortcut-row.sub {
+  padding-left: 16px;
+  font-size: 13px;
+}
 
 .shortcut-group-label {
   font-weight: 600;

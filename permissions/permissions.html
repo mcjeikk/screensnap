@@ -1,60 +1,86 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>ScreenBolt — Grant Permissions</title>
-  <link rel="stylesheet" href="../assets/styles/themes.css">
-  <style>
-    body {
-      font-family: -apple-system, 'Segoe UI', Arial, sans-serif;
-      background: var(--color-bg, #0f0a2e);
-      color: var(--color-text, #e2e8f0);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-    .card {
-      background: var(--color-surface, #1e1b4b);
-      border-radius: 16px;
-      padding: 32px 40px;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    }
-    h2 { margin: 0 0 8px; font-size: 22px; }
-    p { color: var(--color-text-muted, #94a3b8); font-size: 14px; margin: 0 0 24px; }
-    .status { font-size: 48px; margin-bottom: 16px; }
-    .btn {
-      background: #4F46E5;
-      color: white;
-      border: none;
-      padding: 12px 32px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      margin: 6px;
-    }
-    .btn:hover { background: #4338ca; }
-    .btn--success { background: #059669; }
-    .btn--success:hover { background: #047857; }
-    .result { margin-top: 16px; font-size: 14px; }
-    .result--ok { color: #34d399; }
-    .result--fail { color: #f87171; }
-  </style>
-</head>
-<body data-theme="dark">
-  <div class="card">
-    <div class="status">🎤</div>
-    <h2>ScreenBolt needs your permission</h2>
-    <p>Chrome requires granting access from a full page. Click the button below, accept the prompt, then close this tab.</p>
-    <div>
-      <button class="btn" id="btn-mic">🎤 Grant Microphone</button>
-      <button class="btn" id="btn-cam">📷 Grant Camera</button>
+  <head>
+    <meta charset="UTF-8" />
+    <title>ScreenBolt — Grant Permissions</title>
+    <link rel="stylesheet" href="../assets/styles/themes.css" />
+    <style>
+      body {
+        font-family: -apple-system, 'Segoe UI', Arial, sans-serif;
+        background: var(--color-bg, #0f0a2e);
+        color: var(--color-text, #e2e8f0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .card {
+        background: var(--color-surface, #1e1b4b);
+        border-radius: 16px;
+        padding: 32px 40px;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 22px;
+      }
+      p {
+        color: var(--color-text-muted, #94a3b8);
+        font-size: 14px;
+        margin: 0 0 24px;
+      }
+      .status {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+      .btn {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: 6px;
+      }
+      .btn:hover {
+        background: #4338ca;
+      }
+      .btn--success {
+        background: #059669;
+      }
+      .btn--success:hover {
+        background: #047857;
+      }
+      .result {
+        margin-top: 16px;
+        font-size: 14px;
+      }
+      .result--ok {
+        color: #34d399;
+      }
+      .result--fail {
+        color: #f87171;
+      }
+    </style>
+  </head>
+  <body data-theme="dark">
+    <div class="card">
+      <div class="status">🎤</div>
+      <h2>ScreenBolt needs your permission</h2>
+      <p>
+        Chrome requires granting access from a full page. Click the button below, accept the prompt, then close this
+        tab.
+      </p>
+      <div>
+        <button class="btn" id="btn-mic">🎤 Grant Microphone</button>
+        <button class="btn" id="btn-cam">📷 Grant Camera</button>
+      </div>
+      <div class="result" id="result"></div>
     </div>
-    <div class="result" id="result"></div>
-  </div>
-  <script src="permissions.js"></script>
-</body>
+    <script type="module" src="permissions.js"></script>
+  </body>
 </html>
