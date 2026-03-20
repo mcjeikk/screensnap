@@ -212,19 +212,23 @@ async function handleStartRecording(): Promise<void> {
   try {
     const wantsMic = getEl<HTMLInputElement>('opt-mic').checked;
 
-    // If mic is requested, verify permission is granted before starting
+    // If mic is requested, test actual getUserMedia access.
+    // This is the only reliable way to check — permissions.query is unreliable in extension popups.
+    // The popup is a real extension page, so getUserMedia works here and the grant
+    // carries over to the offscreen document (same origin).
     if (wantsMic) {
       try {
-        const permStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
-        if (permStatus.state !== 'granted') {
-          // Open permissions page so user can grant mic access
-          await chrome.tabs.create({ url: chrome.runtime.getURL('permissions/permissions.html') });
-          showRecError('Microphone permission required. Please grant access and try again.');
-          btn.disabled = false;
-          return;
-        }
+        const testStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Permission granted — release the test stream immediately
+        testStream.getTracks().forEach((t) => t.stop());
       } catch {
-        // permissions.query not supported — proceed and let offscreen handle it
+        // Permission denied or not yet granted — open permissions page
+        await chrome.tabs.create({
+          url: chrome.runtime.getURL('permissions/permissions.html?request=microphone'),
+        });
+        showRecError('Microphone permission required. Grant access on the permissions page, then try again.');
+        btn.disabled = false;
+        return;
       }
     }
 

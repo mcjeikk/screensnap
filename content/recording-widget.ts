@@ -5,51 +5,51 @@
  * tab during recording. Uses a closed shadow DOM to avoid CSS conflicts with the
  * host page. Communicates with the service worker via chrome.runtime.sendMessage().
  *
+ * Wrapped in IIFE because this script is injected via chrome.scripting.executeScript
+ * and must support re-execution in the same page context without const redeclaration errors.
+ *
  * Standalone content script — no imports from utils/.
  */
+((): void => {
+  // ── Types ──────────────────────────────────────────────
 
-// ── Types ──────────────────────────────────────────────
+  type PipPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  type PipSize = 'small' | 'medium' | 'large';
 
-type PipPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-type PipSize = 'small' | 'medium' | 'large';
+  interface WebcamPipConfig {
+    pip: boolean;
+    pipPosition?: PipPosition;
+    pipSize?: PipSize;
+  }
 
-interface WebcamPipConfig {
-  pip: boolean;
-  pipPosition?: PipPosition;
-  pipSize?: PipSize;
-}
+  interface TimerResponse {
+    success?: boolean;
+    elapsed?: number;
+  }
 
-interface TimerResponse {
-  success?: boolean;
-  elapsed?: number;
-}
+  interface WidgetMessage {
+    action: string;
+    muted?: boolean;
+    config?: WebcamPipConfig;
+  }
 
-interface WidgetMessage {
-  action: string;
-  muted?: boolean;
-  config?: WebcamPipConfig;
-}
+  // ── Constants ──────────────────────────────────────────
 
-// ── Constants ──────────────────────────────────────────
+  const WIDGET_HOST_ID = '__screenBoltWidget';
 
-const WIDGET_HOST_ID = '__screenBoltWidget';
+  const PIP_SIZE_MAP: Record<PipSize, number> = {
+    small: 120,
+    medium: 180,
+    large: 240,
+  };
 
-const PIP_SIZE_MAP: Record<PipSize, number> = {
-  small: 120,
-  medium: 180,
-  large: 240,
-};
+  // Remove any stale widget from previous injection
+  const existingHost = document.getElementById(WIDGET_HOST_ID);
+  if (existingHost) {
+    existingHost.remove();
+  }
 
-// Remove any stale widget from previous injection (e.g. after recording stopped)
-const existingHost = document.getElementById(WIDGET_HOST_ID);
-if (existingHost) {
-  existingHost.remove();
-}
-
-// Always initialize fresh on each injection
-initWidget();
-
-function initWidget(): void {
+  // ── Create Shadow DOM Host ──────────────────────
   // ── Create Shadow DOM Host ──────────────────────
 
   const host: HTMLDivElement = document.createElement('div');
@@ -466,4 +466,4 @@ function initWidget(): void {
     cleanupWebcam();
     host.remove();
   }
-}
+})();
