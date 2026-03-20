@@ -10,6 +10,7 @@ export interface RecordingConfig {
   source: 'tab' | 'screen' | 'camera';
   streamId?: string;
   resolution: '720' | '1080' | '2160';
+  format?: 'mp4' | 'webm';
   microphone: boolean;
   systemAudio: boolean;
   pip: boolean;

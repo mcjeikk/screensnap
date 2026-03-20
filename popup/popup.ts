@@ -31,6 +31,7 @@ interface PopupRecordingConfig {
   pipPosition: string;
   pipSize: string;
   resolution: string;
+  format: 'mp4' | 'webm';
   countdown: boolean;
 }
 
@@ -235,6 +236,7 @@ async function handleStartRecording(): Promise<void> {
       pipPosition: queryEl<HTMLSelectElement>('pip-position')?.value ?? 'bottom-right',
       pipSize: queryEl<HTMLSelectElement>('pip-size')?.value ?? 'medium',
       resolution: getEl<HTMLSelectElement>('opt-resolution').value,
+      format: getEl<HTMLSelectElement>('opt-format').value as 'mp4' | 'webm',
       countdown: getEl<HTMLInputElement>('opt-countdown').checked,
     };
 

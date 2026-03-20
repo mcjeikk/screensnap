@@ -40,10 +40,14 @@ const PIP_SIZE_MAP: Record<PipSize, number> = {
   large: 240,
 };
 
-// Prevent double injection
-if (!document.getElementById(WIDGET_HOST_ID)) {
-  initWidget();
+// Remove any stale widget from previous injection (e.g. after recording stopped)
+const existingHost = document.getElementById(WIDGET_HOST_ID);
+if (existingHost) {
+  existingHost.remove();
 }
+
+// Always initialize fresh on each injection
+initWidget();
 
 function initWidget(): void {
   // ── Create Shadow DOM Host ──────────────────────

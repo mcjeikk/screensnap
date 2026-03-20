@@ -182,7 +182,7 @@ async function handleStartRecording(config: RecordingConfig): Promise<void> {
     }
   }
 
-  startMediaRecorder(combinedStream);
+  startMediaRecorder(combinedStream, config.format);
   recordingStartTime = Date.now();
   pausedDuration = 0;
   pauseStartTime = 0;
@@ -366,13 +366,21 @@ function createPiPStream(
 }
 
 /** Configure and start MediaRecorder. */
-function startMediaRecorder(stream: MediaStream): void {
-  // Prefer MP4 H.264 (Chrome 130+), fallback to WebM
-  const mimeType = MediaRecorder.isTypeSupported('video/mp4;codecs=avc1.42E01E,mp4a.40.2')
-    ? 'video/mp4;codecs=avc1.42E01E,mp4a.40.2'
-    : MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+function startMediaRecorder(stream: MediaStream, preferredFormat?: 'mp4' | 'webm'): void {
+  // Select MIME type based on user preference
+  let mimeType: string;
+  if (preferredFormat === 'webm') {
+    mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
       ? 'video/webm;codecs=vp9,opus'
       : 'video/webm';
+  } else {
+    // Default: prefer MP4 H.264 (Chrome 130+), fallback to WebM
+    mimeType = MediaRecorder.isTypeSupported('video/mp4;codecs=avc1.42E01E,mp4a.40.2')
+      ? 'video/mp4;codecs=avc1.42E01E,mp4a.40.2'
+      : MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+        ? 'video/webm;codecs=vp9,opus'
+        : 'video/webm';
+  }
 
   mediaRecorder = new MediaRecorder(stream, {
     mimeType,

@@ -99,10 +99,6 @@ function bindButtons(): void {
     'click',
     downloadRecording,
   );
-  (document.getElementById('btn-webm') as HTMLButtonElement).addEventListener(
-    'click',
-    () => void exportAsWebm(),
-  );
   (document.getElementById('btn-discard') as HTMLButtonElement).addEventListener('click', discard);
   (document.getElementById('btn-gif') as HTMLButtonElement).addEventListener(
     'click',
@@ -342,90 +338,6 @@ function trimRecording(): Promise<Blob> {
 /** Maximum GIF width — keeps file size reasonable. */
 const GIF_MAX_WIDTH = 640;
 /** Target frames per second for GIF output. */
-// ── WebM Export ─────────────────────────────────────
-
-/** Re-encode the recording as WebM VP9 (smaller than MP4 H.264). */
-async function exportAsWebm(): Promise<void> {
-  if (!videoBlob || isTrimming) return;
-
-  // If already WebM, just download directly
-  if (videoMimeType.includes('webm')) {
-    const url = URL.createObjectURL(videoBlob);
-    triggerDownload(url, `ScreenBolt_${getTimestamp()}.webm`);
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
-    return;
-  }
-
-  // Re-encode MP4 → WebM via canvas + MediaRecorder
-  const video = document.createElement('video');
-  video.muted = true;
-  video.playsInline = true;
-  video.src = videoBlobUrl!;
-
-  await new Promise<void>((resolve) => {
-    video.onloadedmetadata = () => resolve();
-  });
-
-  const canvas = document.createElement('canvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext('2d')!;
-
-  const webmMime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
-    ? 'video/webm;codecs=vp9,opus'
-    : 'video/webm';
-
-  const stream = canvas.captureStream(30);
-
-  // Include audio if the original has it (captureStream is non-standard)
-  const origVideo = document.getElementById('preview-video') as HTMLVideoElement;
-  const captureStreamFn = (origVideo as unknown as Record<string, unknown>)['captureStream'] as
-    | (() => MediaStream)
-    | undefined;
-  if (captureStreamFn) {
-    const origStream = captureStreamFn.call(origVideo);
-    origStream.getAudioTracks().forEach((t: MediaStreamTrack) => stream.addTrack(t));
-  }
-
-  const recorder = new MediaRecorder(stream, { mimeType: webmMime, videoBitsPerSecond: 3_000_000 });
-  const chunks: Blob[] = [];
-  recorder.ondataavailable = (e) => {
-    if (e.data.size > 0) chunks.push(e.data);
-  };
-
-  const startTime = trimStart > 0.05 ? trimStart : 0;
-  const endTime = trimEnd < videoDuration - 0.05 ? trimEnd : videoDuration;
-
-  video.currentTime = startTime;
-  await seekVideo(video, startTime);
-
-  const done = new Promise<void>((resolve) => {
-    recorder.onstop = () => resolve();
-  });
-
-  recorder.start(100);
-  video.play();
-
-  // Draw frames until end
-  const drawLoop = (): void => {
-    if (video.currentTime >= endTime || video.ended) {
-      video.pause();
-      recorder.stop();
-      return;
-    }
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    requestAnimationFrame(drawLoop);
-  };
-  requestAnimationFrame(drawLoop);
-
-  await done;
-
-  const webmBlob = new Blob(chunks, { type: webmMime });
-  const url = URL.createObjectURL(webmBlob);
-  triggerDownload(url, `ScreenBolt_${getTimestamp()}.webm`);
-  setTimeout(() => URL.revokeObjectURL(url), 5000);
-}
-
 // ── GIF Export ──────────────────────────────────────
 
 const GIF_FPS = 10;
