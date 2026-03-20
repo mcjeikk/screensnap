@@ -11,15 +11,14 @@
  * classic script, not as an ES module).
  */
 
-// -- Window augmentation for double-injection guard --------------------
-// Using `as any` instead of `declare global` to avoid needing `export {}`
-// which causes CJS/ESM output that breaks in content script context.
+// Wrapped in IIFE because this script is injected via chrome.scripting.executeScript
+// and must support re-execution in the same page context without const redeclaration errors.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+((): void => {
 
 // Prevent double injection
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-if ((window as any).__screenBoltInjected) {
-  throw new Error('ScreenBolt content script already injected');
-}
+if ((window as any).__screenBoltInjected) return;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).__screenBoltInjected = true;
 
@@ -519,3 +518,5 @@ function getTimestamp(): string {
   const pad = (n: number): string => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
 }
+
+})();
