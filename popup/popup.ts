@@ -232,11 +232,29 @@ async function handleStartRecording(): Promise<void> {
       }
     }
 
+    const wantsPip = queryEl<HTMLInputElement>('opt-pip')?.checked ?? false;
+
+    // If PiP webcam is requested for screen recording, pre-grant camera permission.
+    // The offscreen document can't show permission prompts, so we test it here.
+    if (wantsPip && selectedSource === 'screen') {
+      try {
+        const testCam = await navigator.mediaDevices.getUserMedia({ video: true });
+        testCam.getTracks().forEach((t) => t.stop());
+      } catch {
+        await chrome.tabs.create({
+          url: chrome.runtime.getURL('permissions/permissions.html?request=camera'),
+        });
+        showRecError('Camera permission required for PiP. Grant access, then try again.');
+        btn.disabled = false;
+        return;
+      }
+    }
+
     const config: PopupRecordingConfig = {
       source: selectedSource,
       microphone: wantsMic,
       systemAudio: queryEl<HTMLInputElement>('opt-system-audio')?.checked ?? false,
-      pip: queryEl<HTMLInputElement>('opt-pip')?.checked ?? false,
+      pip: wantsPip,
       pipPosition: queryEl<HTMLSelectElement>('pip-position')?.value ?? 'bottom-right',
       pipSize: queryEl<HTMLSelectElement>('pip-size')?.value ?? 'medium',
       resolution: getEl<HTMLSelectElement>('opt-resolution').value,

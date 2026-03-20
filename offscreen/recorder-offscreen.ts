@@ -179,6 +179,7 @@ async function handleStartRecording(config: RecordingConfig): Promise<void> {
     }
   }
 
+  console.info(LOG_PREFIX, `Streams: main=${mainStream.getVideoTracks().length}v/${mainStream.getAudioTracks().length}a, mic=${micStream?.getAudioTracks().length ?? 0}a, webcam=${webcamStream?.getVideoTracks().length ?? 0}v, pip=${config.pip}, source=${config.source}`);
   combinedStream = buildCombinedStream(mainStream, micStream, webcamStream, config);
 
   // Play back tab audio to the user — chrome.tabCapture mutes the tab
