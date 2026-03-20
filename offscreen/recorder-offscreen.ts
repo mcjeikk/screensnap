@@ -498,6 +498,7 @@ async function onRecordingStopped(): Promise<void> {
       action: 'offscreen-recording-complete',
       duration,
       size: blob.size,
+      mimeType: blob.type,
     });
   } catch (err) {
     console.warn(LOG_PREFIX, 'Failed to notify SW:', (err as Error).message);

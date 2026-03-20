@@ -30,7 +30,8 @@ import type { Settings, RecordingConfig, HistoryEntry } from '../utils/types.js'
 
 import { createLogger } from '../utils/logger.js';
 import { getTimestamp, sanitizeFilename } from '../utils/helpers.js';
-import { getSettings } from '../utils/storage.js';
+import { getSettings, addToHistory } from '../utils/storage.js';
+import { generateId } from '../utils/helpers.js';
 import { ExtensionError, ErrorCodes } from '../utils/errors.js';
 import {
   hasDesktopCaptureSupport,
@@ -253,7 +254,7 @@ registerHandler('get-recording-time', () => forwardToOffscreen('offscreen-get-ti
 
 // Offscreen recording complete
 registerHandler('offscreen-recording-complete', (msg) =>
-  onRecordingComplete(msg.duration!, msg.size!),
+  onRecordingComplete(msg.duration!, msg.size!, msg.mimeType as string),
 );
 
 // History
@@ -672,6 +673,7 @@ async function handleStopRecording(): Promise<HandlerResponse> {
 async function onRecordingComplete(
   duration: number,
   size: number,
+  mimeType: string,
 ): Promise<HandlerResponse> {
   log.info(
     `Recording complete: ${(size / 1024 / 1024).toFixed(1)} MB, ${Math.round(duration / 1000)}s`,
@@ -688,6 +690,28 @@ async function onRecordingComplete(
     } catch {
       // Tab may have been closed
     }
+  }
+
+  // Add recording to history
+  const format = mimeType?.includes('mp4') ? 'mp4' : 'webm';
+  const entry: HistoryEntry = {
+    id: generateId(),
+    type: 'recording',
+    name: `Recording_${getTimestamp()}`,
+    timestamp: Date.now(),
+    width: 0,
+    height: 0,
+    sizeBytes: size,
+    format,
+    thumbnail: null,
+    dataUrl: null,
+    duration,
+  };
+  try {
+    await addToHistory(entry);
+    log.debug('Recording added to history:', entry.id);
+  } catch (err) {
+    log.warn('Failed to add recording to history:', (err as Error).message);
   }
 
   // Clear recording state

@@ -342,7 +342,13 @@ type CaptureAction = 'capture-visible' | 'capture-full-page' | 'capture-selectio
 async function captureAction(action: CaptureAction): Promise<void> {
   try {
     if (action === 'capture-selection' || action === 'capture-full-page') {
-      await chrome.runtime.sendMessage({ action });
+      // Wait for SW to confirm it has the tab ID and injected the content script
+      // BEFORE closing the popup (closing affects active tab context).
+      const result = await chrome.runtime.sendMessage({ action });
+      if (!result?.success) {
+        showError(result?.error || 'Capture failed');
+        return;
+      }
       window.close();
       return;
     }
