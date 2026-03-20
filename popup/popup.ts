@@ -74,7 +74,14 @@ function bindScreenshotButtons(): void {
 
 /** Bind click handlers to recording source buttons (Tab / Screen / Camera). */
 function bindSourceSelector(): void {
+  const isMac = navigator.platform.toUpperCase().includes('MAC') || navigator.userAgent.includes('Macintosh');
+
   document.querySelectorAll<HTMLButtonElement>('.source-btn').forEach((btn) => {
+    // Hide "Screen" on macOS — system audio not supported, limited usefulness
+    if (isMac && btn.dataset.source === 'screen') {
+      btn.style.display = 'none';
+      return;
+    }
     btn.addEventListener('click', () => selectSource(btn.dataset.source as RecordingSource));
   });
 }
