@@ -141,13 +141,26 @@ async function handleStartRecording(config: RecordingConfig): Promise<void> {
 
   mainStream = await acquireMainStream(config);
 
-  // Microphone — getUserMedia directly (permissions granted via permissions page)
+  // Microphone — getUserMedia in the offscreen context.
+  // Requires prior permission grant from the permissions page.
   if (config.microphone) {
     try {
-      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      console.info(LOG_PREFIX, 'Microphone acquired');
+      micStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
+      console.info(LOG_PREFIX, `Microphone acquired (${micStream.getAudioTracks().length} tracks)`);
     } catch (err) {
-      console.warn(LOG_PREFIX, 'Mic not available:', (err as Error).message, '(use Grant Mic/Camera Access button)');
+      console.error(
+        LOG_PREFIX,
+        'Mic acquisition failed:',
+        (err as Error).name,
+        (err as Error).message,
+        '— User must grant mic access via the permissions page first.',
+      );
     }
   }
 

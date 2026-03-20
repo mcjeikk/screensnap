@@ -441,12 +441,17 @@ function initWidget(): void {
     }
   }
 
-  // Listen for PiP setup from service worker
-  chrome.runtime.onMessage.addListener((msg: WidgetMessage) => {
-    if (msg?.action === 'setup-webcam-pip') {
-      setupWebcamBubble(msg.config);
-    }
-  });
+  // Listen for PiP setup from service worker.
+  // Must return true for sendResponse to work asynchronously.
+  chrome.runtime.onMessage.addListener(
+    (msg: WidgetMessage, _sender: chrome.runtime.MessageSender, sendResponse: (resp: unknown) => void) => {
+      if (msg?.action === 'setup-webcam-pip') {
+        setupWebcamBubble(msg.config);
+        sendResponse({ success: true });
+      }
+      return false;
+    },
+  );
 
   // Remove the widget from the DOM and clean up resources.
   function removeWidget(): void {

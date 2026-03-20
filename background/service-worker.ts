@@ -525,19 +525,29 @@ async function continueStartRecording(
     if (targetTabId) {
       await injectRecordingWidget(targetTabId);
 
-      // If PiP webcam is enabled, tell the content script to show the bubble
+      // If PiP webcam is enabled, tell the content script to show the bubble.
+      // Retry because the widget script may not have registered its listener yet.
       if (config.pip) {
-        try {
-          await chrome.tabs.sendMessage(targetTabId, {
-            action: 'setup-webcam-pip',
-            config: {
-              pip: true,
-              pipPosition: config.pipPosition,
-              pipSize: config.pipSize,
-            },
-          });
-        } catch (err) {
-          log.warn('Failed to setup webcam PiP on page:', (err as Error).message);
+        const pipMsg = {
+          action: 'setup-webcam-pip',
+          config: {
+            pip: true,
+            pipPosition: config.pipPosition,
+            pipSize: config.pipSize,
+          },
+        };
+        let pipSent = false;
+        for (let attempt = 0; attempt < 5 && !pipSent; attempt++) {
+          try {
+            if (attempt > 0) await new Promise((r) => setTimeout(r, 200));
+            await chrome.tabs.sendMessage(targetTabId, pipMsg);
+            pipSent = true;
+          } catch {
+            // Widget listener not ready yet — retry
+          }
+        }
+        if (!pipSent) {
+          log.warn('Failed to setup webcam PiP after retries');
         }
       }
     }

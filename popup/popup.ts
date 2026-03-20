@@ -209,9 +209,27 @@ async function handleStartRecording(): Promise<void> {
   hideRecError();
 
   try {
+    const wantsMic = getEl<HTMLInputElement>('opt-mic').checked;
+
+    // If mic is requested, verify permission is granted before starting
+    if (wantsMic) {
+      try {
+        const permStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+        if (permStatus.state !== 'granted') {
+          // Open permissions page so user can grant mic access
+          await chrome.tabs.create({ url: chrome.runtime.getURL('permissions/permissions.html') });
+          showRecError('Microphone permission required. Please grant access and try again.');
+          btn.disabled = false;
+          return;
+        }
+      } catch {
+        // permissions.query not supported — proceed and let offscreen handle it
+      }
+    }
+
     const config: PopupRecordingConfig = {
       source: selectedSource,
-      microphone: getEl<HTMLInputElement>('opt-mic').checked,
+      microphone: wantsMic,
       systemAudio: queryEl<HTMLInputElement>('opt-system-audio')?.checked ?? false,
       pip: queryEl<HTMLInputElement>('opt-pip')?.checked ?? false,
       pipPosition: queryEl<HTMLSelectElement>('pip-position')?.value ?? 'bottom-right',
