@@ -11,26 +11,17 @@
  * classic script, not as an ES module).
  */
 
-// Force TypeScript to treat this file as a module so `declare global` works.
-// The compiled output remains a plain script (no import/export in emitted JS).
-export {};
-
 // -- Window augmentation for double-injection guard --------------------
-
-declare global {
-  interface Window {
-    __screenBoltInjected?: boolean;
-  }
-}
+// Using `as any` instead of `declare global` to avoid needing `export {}`
+// which causes CJS/ESM output that breaks in content script context.
 
 // Prevent double injection
-if (window.__screenBoltInjected) {
-  // Early-exit trick: the rest of the file is unreachable when the guard
-  // fires, but TypeScript still type-checks it.  We throw inside the
-  // guard so the top-level code below is only reached once.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+if ((window as any).__screenBoltInjected) {
   throw new Error('ScreenBolt content script already injected');
 }
-window.__screenBoltInjected = true;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(window as any).__screenBoltInjected = true;
 
 // -- Constants --------------------------------------------------------
 
